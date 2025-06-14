@@ -540,33 +540,6 @@
             <button type="submit">Unlock</button>
         </form>
     </div>
-    <div class="walkthrough">
-        <div class="walkthrough-step" id="step1">
-            <h2>1. Vupop's Business Model & Market Context</h2>
-            <p>Vupop is a sports media platform with a unique broadcast licensing model. At 313K MAU, Vupop achieves a £100M valuation—3-4x less than generic social platforms. Our unique sports content and broadcast licensing model commands a premium, as shown in market comps.</p>
-        </div>
-        <div class="walkthrough-step" id="step2" style="display:none;">
-            <h2>2. Key Assumptions & Editable Variables</h2>
-            <p>Adjust the assumptions below to model different scenarios. All calculations and projections update live as you change inputs.</p>
-        </div>
-        <div class="walkthrough-step" id="step3" style="display:none;">
-            <h2>3. Revenue & Cost Breakdown</h2>
-            <p>See how revenue streams and costs evolve over time, and how they drive profitability and growth.</p>
-        </div>
-        <div class="walkthrough-step" id="step4" style="display:none;">
-            <h2>4. KPI & Scenario Analysis</h2>
-            <p>Review key performance indicators and scenario outcomes. Explore how different assumptions impact exit valuation and investor returns.</p>
-        </div>
-        <div class="walkthrough-step" id="step5" style="display:none;">
-            <h2>5. Exit Valuation & Benchmarking</h2>
-            <p>Compare Vupop's exit potential to market comps and see the risk-adjusted expected value based on your scenario probabilities.</p>
-        </div>
-        <div class="walkthrough-nav">
-            <button id="prevStep" onclick="walkthroughStep(-1)" style="display:none;">Back</button>
-            <button id="nextStep" onclick="walkthroughStep(1)">Next</button>
-        </div>
-    </div>
-    <button class="collapse-btn" onclick="toggleVariables()">Show/Hide Assumptions</button>
     <div class="container" id="mainContent" style="display:none;">
         <div class="sidebar">
             <div class="sidebar-logo"><img src="logo.png" alt="Vupop Logo" style="width:40px;"></div>
@@ -935,242 +908,6 @@
             return new Intl.NumberFormat('en-GB', { maximumFractionDigits: 0 }).format(num);
         }
 
-        // Add input validation
-        function validateInput(input) {
-            const value = parseFloat(input.value);
-            const min = parseFloat(input.min);
-            const max = parseFloat(input.max);
-            if (value < min) input.value = min;
-            if (value > max) input.value = max;
-        }
-        document.getElementById('revenue').addEventListener('change', function() { validateInput(this); });
-        document.getElementById('growth').addEventListener('change', function() { validateInput(this); });
-        document.getElementById('margin').addEventListener('change', function() { validateInput(this); });
-        function calculateProjections() {
-            // Read all input values
-            const startingMAU = parseInt(document.getElementById('startingMAU').value) || 0;
-            const mauTargets = [
-                parseInt(document.getElementById('mau1').value) || 0,
-                parseInt(document.getElementById('mau2').value) || 0,
-                parseInt(document.getElementById('mau3').value) || 0,
-                parseInt(document.getElementById('mau4').value) || 0,
-                parseInt(document.getElementById('mau5').value) || 0
-            ];
-            const premiumPrice = parseFloat(document.getElementById('premiumPrice').value) || 0;
-            const adoptionRate = parseFloat(document.getElementById('adoptionRate').value) || 0;
-            const adRevenue = parseFloat(document.getElementById('adRevenue').value) || 0;
-            const affiliateRate = parseFloat(document.getElementById('affiliateRate').value) || 0;
-            const socialTierPrice = parseFloat(document.getElementById('socialTierPrice').value) || 0;
-            const broadcastTierPrice = parseFloat(document.getElementById('broadcastTierPrice').value) || 0;
-            const broadcastPlusTierPrice = parseFloat(document.getElementById('broadcastPlusTierPrice').value) || 0;
-            const usageFee = parseFloat(document.getElementById('usageFee').value) || 0;
-            const marketingSpend = [
-                parseFloat(document.getElementById('marketingSpend1').value) || 0,
-                parseFloat(document.getElementById('marketingSpend2').value) || 0,
-                parseFloat(document.getElementById('marketingSpend3').value) || 0,
-                parseFloat(document.getElementById('marketingSpend4').value) || 0,
-                parseFloat(document.getElementById('marketingSpend5').value) || 0
-            ];
-            const contentRate = parseFloat(document.getElementById('contentRate').value) || 0;
-            const scenarioProbs = [
-                parseFloat(document.getElementById('probConservative').value) || 0,
-                parseFloat(document.getElementById('probBase').value) || 0,
-                parseFloat(document.getElementById('probOptimistic').value) || 0
-            ];
-
-            // B2B customer assumptions
-            const socialCustomers = [3, 5, 15, 25, 40];
-            const broadcastCustomers = [3, 8, 15, 25, 35];
-            const broadcastPlusCustomers = [1, 3, 5, 8, 10];
-            const usageSeconds = [2900, 25000, 100000, 250000, 450000];
-
-            // COGS % by year
-            const cogsPerc = [0.49, 0.40, 0.30, 0.28, 0.25];
-            // OpEx by year
-            const opex = [950000, 1900000, 3200000, 5200000, 7500000];
-            // Churn by year
-            const churnRates = [0.15, 0.12, 0.10, 0.08, 0.07];
-
-            // --- Year-by-year calculations ---
-            let results = [];
-            for (let i = 0; i < 5; i++) {
-                // Premium Revenue
-                const premiumRevenue = mauTargets[i] * (adoptionRate/100) * premiumPrice * 12;
-                // Ad Revenue (only from Year 3)
-                const adRev = i >= 2 ? mauTargets[i] * adRevenue * 12 : 0;
-                // Affiliate Revenue (simple exponential growth, base £10K in Y1)
-                const affiliateRev = 10000 * Math.pow(2, i);
-                // B2B Revenue
-                const socialRev = socialCustomers[i] * socialTierPrice * 12;
-                const broadcastRev = broadcastCustomers[i] * broadcastTierPrice * 12;
-                const broadcastPlusRev = broadcastPlusCustomers[i] * broadcastPlusTierPrice * 12;
-                // Usage Revenue
-                const usageRev = usageSeconds[i] * usageFee;
-                // Total Revenue
-                const totalRevenue = premiumRevenue + adRev + affiliateRev + socialRev + broadcastRev + broadcastPlusRev + usageRev;
-                // COGS
-                const cogs = totalRevenue * cogsPerc[i];
-                // Gross Profit
-                const grossProfit = totalRevenue - cogs;
-                // Gross Margin %
-                const grossMargin = totalRevenue > 0 ? (grossProfit / totalRevenue) * 100 : 0;
-                // EBITDA
-                const ebitda = grossProfit - opex[i];
-                // EBITDA Margin %
-                const ebitdaMargin = totalRevenue > 0 ? (ebitda / totalRevenue) * 100 : 0;
-                // CAC (Marketing Spend / Net New MAU)
-                const newUsers = i === 0 ? mauTargets[0] - startingMAU : mauTargets[i] - mauTargets[i-1];
-                const cac = newUsers > 0 ? marketingSpend[i] / newUsers : 0;
-                // ARPU (monthly)
-                const arpu = mauTargets[i] > 0 ? totalRevenue / mauTargets[i] / 12 : 0;
-                // B2B LTV (average B2B revenue per customer * 24 months)
-                const totalB2BCustomers = socialCustomers[i] + broadcastCustomers[i] + broadcastPlusCustomers[i];
-                const avgB2BRevenue = totalB2BCustomers > 0 ? (socialRev + broadcastRev + broadcastPlusRev) / totalB2BCustomers : 0;
-                const b2bLTV = avgB2BRevenue * 24;
-                // LTV/CAC
-                const ltvCac = cac > 0 ? b2bLTV / cac : 0;
-                // Retention
-                const retention = 1 - churnRates[i];
-                // Upload Rate (clips/day)
-                const uploadRate = Math.round(mauTargets[i] * contentRate);
-                results.push({
-                    premiumRevenue, adRev, affiliateRev, socialRev, broadcastRev, broadcastPlusRev, usageRev, totalRevenue,
-                    cogs, grossProfit, grossMargin, ebitda, ebitdaMargin, cac, arpu, b2bLTV, ltvCac, retention, uploadRate
-                });
-            }
-
-            // --- Update Key Metrics (Year 4) ---
-            document.getElementById('projectedRevenue').textContent = `£${formatNumber(results[3].totalRevenue)}`;
-            document.getElementById('profitPotential').textContent = `£${formatNumber(results[3].ebitda)}`;
-            document.getElementById('growthRate').textContent = mauTargets[2] > 0 ? `${(((mauTargets[3] - mauTargets[2]) / mauTargets[2]) * 100).toFixed(1)}%` : '0%';
-            document.getElementById('exitValuation').querySelector('.metric-value').textContent = `£${formatNumber(results[3].totalRevenue * 10)}`;
-
-            // --- Update Financial Projections Table ---
-            let tableBody = document.getElementById('projectionsTable');
-            tableBody.innerHTML = '';
-            for (let i = 0; i < 5; i++) {
-                let row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>Year ${i+1}</td>
-                    <td>£${formatNumber(results[i].totalRevenue)}</td>
-                    <td>£${formatNumber(results[i].ebitda)}</td>
-                    <td>${mauTargets[i] > 0 && i > 0 ? (((mauTargets[i] - mauTargets[i-1]) / mauTargets[i-1]) * 100).toFixed(1) : '0'}%</td>
-                `;
-                tableBody.appendChild(row);
-            }
-
-            // --- Update Dynamic KPIs (Year 4) ---
-            document.querySelector('.kpi-card:nth-child(1) .kpi-value').textContent = `£${results[3].cac.toFixed(2)}`;
-            document.querySelector('.kpi-card:nth-child(2) .kpi-value').textContent = `£${results[3].arpu.toFixed(2)}`;
-            document.querySelector('.kpi-card:nth-child(3) .kpi-value').textContent = `£${Math.round(results[3].b2bLTV/1000)}K`;
-            document.querySelector('.kpi-card:nth-child(4) .kpi-value').textContent = results[3].ltvCac > 0 ? `${results[3].ltvCac.toFixed(1)}:1` : 'N/A';
-            document.querySelector('.kpi-card:nth-child(5) .kpi-value').textContent = `${(results[3].retention*100).toFixed(0)}%`;
-            document.querySelector('.kpi-card:nth-child(6) .kpi-value').textContent = `${results[3].uploadRate.toLocaleString()}/day`;
-
-            // --- Scenario Analysis ---
-            // Base: Year 4 Revenue, Conservative: -20%, Optimistic: +30%
-            const baseRev = results[3].totalRevenue;
-            const consRev = baseRev * 0.8;
-            const optRev = baseRev * 1.3;
-            const baseVal = baseRev * 10;
-            const consVal = consRev * 10;
-            const optVal = optRev * 10;
-            // Update scenario table (if you want to make it dynamic)
-            const scenarioRows = document.querySelectorAll('.scenario-section table tbody tr');
-            if (scenarioRows.length >= 3) {
-                scenarioRows[0].children[1].textContent = `£${formatNumber(consRev)}`;
-                scenarioRows[0].children[2].textContent = `£${formatNumber(consVal)}`;
-                scenarioRows[0].children[3].textContent = (consVal/4500000).toFixed(1) + 'x';
-                scenarioRows[1].children[1].textContent = `£${formatNumber(baseRev)}`;
-                scenarioRows[1].children[2].textContent = `£${formatNumber(baseVal)}`;
-                scenarioRows[1].children[3].textContent = (baseVal/4500000).toFixed(1) + 'x';
-                scenarioRows[2].children[1].textContent = `£${formatNumber(optRev)}`;
-                scenarioRows[2].children[2].textContent = `£${formatNumber(optVal)}`;
-                scenarioRows[2].children[3].textContent = (optVal/4500000).toFixed(1) + 'x';
-            }
-            // Risk-adjusted expected value
-            const expectedVal = consVal * (scenarioProbs[0]/100) + baseVal * (scenarioProbs[1]/100) + optVal * (scenarioProbs[2]/100);
-            // Optionally display this somewhere in the UI
-            // console.log('Risk-adjusted expected value:', expectedVal);
-
-            // Walkthrough logic
-            let walkthroughIndex = 1;
-            function walkthroughStep(dir) {
-                document.getElementById(`step${walkthroughIndex}`).style.display = 'none';
-                walkthroughIndex += dir;
-                if (walkthroughIndex < 1) walkthroughIndex = 1;
-                if (walkthroughIndex > 5) walkthroughIndex = 5;
-                document.getElementById(`step${walkthroughIndex}`).style.display = 'block';
-                document.getElementById('prevStep').style.display = walkthroughIndex > 1 ? '' : 'none';
-                document.getElementById('nextStep').style.display = walkthroughIndex < 5 ? '' : 'none';
-                updateProgress();
-            }
-            walkthroughStep(0);
-            // Collapsible variables panel
-            function toggleVariables() {
-                const panel = document.getElementById('variablesPanel');
-                panel.style.display = panel.style.display === 'none' ? '' : 'none';
-            }
-            // Compact layout CSS
-            const style = document.createElement('style');
-            style.innerHTML = `
-                .compact-layout { grid-template-columns: 320px 1fr; }
-                .controls-panel.collapsible { max-width: 320px; min-width: 220px; padding: 12px 8px; font-size: 0.95em; }
-                .compact-results { padding: 12px 8px; }
-                .metrics-grid, .kpi-grid { gap: 10px; }
-                .metric-card, .kpi-card { padding: 10px 6px; font-size: 0.95em; }
-                .collapse-btn { position: fixed; top: 10px; left: 10px; z-index: 1000; background: var(--yellow); color: var(--black); border: none; border-radius: 6px; padding: 6px 14px; font-weight: 700; cursor: pointer; }
-            `;
-            document.head.appendChild(style);
-            // Chart.js visuals
-            let growthChart, scenarioChart;
-            function updateCharts(results, mauTargets) {
-                // Hockey stick growth (MAU)
-                const ctx1 = document.getElementById('growthChart').getContext('2d');
-                if (growthChart) growthChart.destroy();
-                growthChart = new Chart(ctx1, {
-                    type: 'line',
-                    data: {
-                        labels: ['Year 1','Year 2','Year 3','Year 4','Year 5'],
-                        datasets: [{
-                            label: 'MAU',
-                            data: mauTargets,
-                            borderColor: '#fff700',
-                            backgroundColor: 'rgba(255, 247, 0, 0.2)',
-                            tension: 0.3,
-                            pointRadius: 4,
-                            fill: true
-                        }]
-                    },
-                    options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
-                });
-                // Scenario bar chart
-                const ctx2 = document.getElementById('scenarioChart').getContext('2d');
-                if (scenarioChart) scenarioChart.destroy();
-                scenarioChart = new Chart(ctx2, {
-                    type: 'bar',
-                    data: {
-                        labels: ['Conservative','Base','Optimistic'],
-                        datasets: [{
-                            label: 'Exit Valuation (£)',
-                            data: [results.consVal, results.baseVal, results.optVal],
-                            backgroundColor: ['#ffb300','#fff700','#bada55']
-                        }]
-                    },
-                    options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
-                });
-            }
-            updateCharts(results, mauTargets);
-        }
-        document.querySelectorAll('input').forEach(input => {
-            input.addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    calculateProjections();
-                }
-            });
-            input.addEventListener('change', calculateProjections);
-        });
-
         // Prepare structure for year-by-year calculations and scenario analysis
         function getYearlyInputs() {
             return {
@@ -1190,35 +927,12 @@
             };
         }
 
-        // Keyboard shortcuts
-        document.addEventListener('keydown', function(e) {
-            if (e.altKey) {
-                switch(e.key) {
-                    case 'ArrowRight':
-                        walkthroughStep(1);
-                        break;
-                    case 'ArrowLeft':
-                        walkthroughStep(-1);
-                        break;
-                    case 'h':
-                        toggleVariables();
-                        break;
-                }
-            }
-        });
-
         // Smooth scrolling
         function scrollToSection(sectionId) {
             const element = document.getElementById(sectionId);
             if (element) {
                 element.scrollIntoView({ behavior: 'smooth' });
             }
-        }
-
-        // Update progress bar
-        function updateProgress() {
-            const progress = (walkthroughIndex / 5) * 100;
-            document.querySelector('.progress-bar-fill').style.width = `${progress}%`;
         }
 
         // Add tooltips to inputs
@@ -1235,13 +949,6 @@
                 group.replaceChild(tooltip, label);
             }
         });
-
-        // Initialize progress bar
-        const progressBar = document.createElement('div');
-        progressBar.className = 'progress-bar';
-        progressBar.innerHTML = '<div class="progress-bar-fill"></div>';
-        document.querySelector('.walkthrough').insertBefore(progressBar, document.querySelector('.walkthrough-nav'));
-        updateProgress();
 
         // Chart.js line graph for KPIs
         let kpiLineChart;
