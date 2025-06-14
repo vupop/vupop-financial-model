@@ -320,20 +320,64 @@
         </header>
         <div class="dashboard">
             <div class="controls-panel fade-in">
-                <h2 class="section-title">Input Parameters</h2>
+                <h2 class="section-title">Key Assumptions</h2>
                 <div class="input-group">
-                    <label for="revenue">Annual Revenue ($)</label>
-                    <input type="number" id="revenue" placeholder="Enter annual revenue" class="tooltip" data-tooltip="Enter your projected annual revenue" min="0" step="1000">
+                    <label for="startingMAU">Starting MAU</label>
+                    <input type="number" id="startingMAU" value="1000" min="0">
                 </div>
                 <div class="input-group">
-                    <label for="growth">Growth Rate (%)</label>
-                    <input type="number" id="growth" placeholder="Enter growth rate" class="tooltip" data-tooltip="Expected annual growth rate" min="0" max="100" step="1">
+                    <label for="mau1">Year 1 Target MAU</label>
+                    <input type="number" id="mau1" value="50000" min="0">
                 </div>
                 <div class="input-group">
-                    <label for="margin">Profit Margin (%)</label>
-                    <input type="number" id="margin" placeholder="Enter profit margin" class="tooltip" data-tooltip="Expected profit margin" min="0" max="100" step="1">
+                    <label for="mau2">Year 2 Target MAU</label>
+                    <input type="number" id="mau2" value="150000" min="0">
                 </div>
-                <button class="button" onclick="calculateMetrics()">Calculate Projections</button>
+                <div class="input-group">
+                    <label for="mau3">Year 3 Target MAU</label>
+                    <input type="number" id="mau3" value="313000" min="0">
+                </div>
+                <div class="input-group">
+                    <label for="mau4">Year 4 Target MAU</label>
+                    <input type="number" id="mau4" value="500000" min="0">
+                </div>
+                <div class="input-group">
+                    <label for="mau5">Year 5 Target MAU</label>
+                    <input type="number" id="mau5" value="750000" min="0">
+                </div>
+                <div class="input-group">
+                    <label for="premiumPrice">Premium Subscription Price (£/month)</label>
+                    <input type="number" id="premiumPrice" value="0.99" step="0.01" min="0">
+                </div>
+                <div class="input-group">
+                    <label for="adoptionRate">Premium Adoption Rate (%)</label>
+                    <input type="number" id="adoptionRate" value="10" step="1" min="0" max="100">
+                </div>
+                <div class="input-group">
+                    <label for="adRevenue">Ad Revenue per User (£/month)</label>
+                    <input type="number" id="adRevenue" value="0.45" step="0.01" min="0">
+                </div>
+                <div class="input-group">
+                    <label for="affiliateRate">Affiliate Commission Rate (%)</label>
+                    <input type="number" id="affiliateRate" value="5.00" step="0.01" min="0" max="100">
+                </div>
+                <div class="input-group">
+                    <label for="socialTierPrice">Social Tier Price (£/month)</label>
+                    <input type="number" id="socialTierPrice" value="999" step="1" min="0">
+                </div>
+                <div class="input-group">
+                    <label for="broadcastTierPrice">Broadcast Tier Price (£/month)</label>
+                    <input type="number" id="broadcastTierPrice" value="3499" step="1" min="0">
+                </div>
+                <div class="input-group">
+                    <label for="broadcastPlusTierPrice">Broadcast+ Tier Price (£/month)</label>
+                    <input type="number" id="broadcastPlusTierPrice" value="4997" step="1" min="0">
+                </div>
+                <div class="input-group">
+                    <label for="usageFee">Usage Fee per Second (£)</label>
+                    <input type="number" id="usageFee" value="12" step="1" min="0">
+                </div>
+                <button class="button" onclick="calculateProjections()">Update Projections</button>
             </div>
             <div class="results-panel fade-in">
                 <h2 class="section-title">Key Metrics</h2>
@@ -571,37 +615,32 @@
         document.getElementById('revenue').addEventListener('change', function() { validateInput(this); });
         document.getElementById('growth').addEventListener('change', function() { validateInput(this); });
         document.getElementById('margin').addEventListener('change', function() { validateInput(this); });
-        function calculateMetrics() {
-            const revenue = parseFloat(document.getElementById('revenue').value) || 0;
-            const growth = parseFloat(document.getElementById('growth').value) || 0;
-            const margin = parseFloat(document.getElementById('margin').value) || 0;
-            let currentRevenue = revenue;
-            let totalProfit = 0;
-            const tableBody = document.getElementById('projectionsTable');
-            tableBody.innerHTML = '';
-            for (let year = 1; year <= 5; year++) {
-                currentRevenue *= (1 + growth / 100);
-                const profit = currentRevenue * (margin / 100);
-                totalProfit += profit;
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>Year ${year}</td>
-                    <td>$${formatNumber(currentRevenue)}</td>
-                    <td>$${formatNumber(profit)}</td>
-                    <td>${growth}%</td>
-                `;
-                tableBody.appendChild(row);
-            }
-            document.getElementById('projectedRevenue').textContent = `$${formatNumber(currentRevenue)}`;
-            document.getElementById('profitPotential').textContent = `$${formatNumber(totalProfit)}`;
-            document.getElementById('growthRate').textContent = `${growth}%`;
-            document.getElementById('exitValuation').querySelector('.metric-value').textContent = 
-                `$${formatNumber(currentRevenue * 5)}`;
+        function calculateProjections() {
+            // Read all input values
+            const startingMAU = parseInt(document.getElementById('startingMAU').value) || 0;
+            const mauTargets = [
+                parseInt(document.getElementById('mau1').value) || 0,
+                parseInt(document.getElementById('mau2').value) || 0,
+                parseInt(document.getElementById('mau3').value) || 0,
+                parseInt(document.getElementById('mau4').value) || 0,
+                parseInt(document.getElementById('mau5').value) || 0
+            ];
+            const premiumPrice = parseFloat(document.getElementById('premiumPrice').value) || 0;
+            const adoptionRate = parseFloat(document.getElementById('adoptionRate').value) || 0;
+            const adRevenue = parseFloat(document.getElementById('adRevenue').value) || 0;
+            const affiliateRate = parseFloat(document.getElementById('affiliateRate').value) || 0;
+            const socialTierPrice = parseFloat(document.getElementById('socialTierPrice').value) || 0;
+            const broadcastTierPrice = parseFloat(document.getElementById('broadcastTierPrice').value) || 0;
+            const broadcastPlusTierPrice = parseFloat(document.getElementById('broadcastPlusTierPrice').value) || 0;
+            const usageFee = parseFloat(document.getElementById('usageFee').value) || 0;
+            // Example: update a metric with new input
+            document.getElementById('projectedRevenue').textContent = `£${formatNumber(mauTargets[3] * premiumPrice * (adoptionRate/100) * 12)}`;
+            // You can expand this logic to update all metrics and tables as needed
         }
         document.querySelectorAll('input').forEach(input => {
             input.addEventListener('keypress', function(e) {
                 if (e.key === 'Enter') {
-                    calculateMetrics();
+                    calculateProjections();
                 }
             });
         });
