@@ -223,6 +223,9 @@ body {
     font-weight: 500;
     margin-bottom: 5px;
     color: #e0e0e0;
+    cursor: help;
+    border-bottom: 1px dotted #a0a0a0;
+    display: inline-block;
 }
 
 .assumption-control input {

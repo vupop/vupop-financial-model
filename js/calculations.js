@@ -1,14 +1,14 @@
 export function calculateProjections(assumptions) {
     const yearlyProjections = [];
     const mauTargets = [
-        assumptions.year1TargetMAU,
-        assumptions.year2TargetMAU,
-        assumptions.year3TargetMAU,
-        assumptions.year4TargetMAU,
-        assumptions.year5TargetMAU,
+        assumptions.year1TargetMAU.value,
+        assumptions.year2TargetMAU.value,
+        assumptions.year3TargetMAU.value,
+        assumptions.year4TargetMAU.value,
+        assumptions.year5TargetMAU.value,
     ];
 
-    let currentMAU = assumptions.startingMAU;
+    let currentMAU = assumptions.startingMAU.value;
 
     for (let i = 0; i < 5; i++) {
         const year = i + 1;
@@ -19,26 +19,26 @@ export function calculateProjections(assumptions) {
         const averageMAU = (currentMAU + targetMAU) / 2;
 
         // Correctly handle percentage-based assumptions by dividing by 100
-        const adoptionRate = assumptions.premiumAdoptionRate / 100;
-        const commissionRate = assumptions.affiliateCommissionRate / 100;
+        const adoptionRate = assumptions.premiumAdoptionRate.value / 100;
+        const commissionRate = assumptions.affiliateCommissionRate.value / 100;
 
         // B2C Revenue
-        const premiumSubsRevenue = averageMAU * adoptionRate * assumptions.premiumSubscriptionPrice * 12;
-        const adRevenue = year >= 3 ? averageMAU * assumptions.adRevenuePerUser * 12 : 0;
+        const premiumSubsRevenue = averageMAU * adoptionRate * assumptions.premiumSubscriptionPrice.value * 12;
+        const adRevenue = year >= 3 ? averageMAU * assumptions.adRevenuePerUser.value * 12 : 0;
         const affiliateRevenue = premiumSubsRevenue * commissionRate;
 
         const totalB2CRevenue = premiumSubsRevenue + adRevenue + affiliateRevenue;
 
         // B2B Revenue
-        const socialTierCustomers = assumptions.initialSocialTierCustomers * Math.pow(2, i);
-        const broadcastTierCustomers = assumptions.initialBroadcastTierCustomers * Math.pow(2, i);
-        const broadcastPlusTierCustomers = assumptions.initialBroadcastPlusTierCustomers * Math.pow(2, i);
-        const secondsLicensed = assumptions.initialSecondsLicensed * Math.pow(4, i); // Faster growth for usage
+        const socialTierCustomers = assumptions.initialSocialTierCustomers.value * Math.pow(2, i);
+        const broadcastTierCustomers = assumptions.initialBroadcastTierCustomers.value * Math.pow(2, i);
+        const broadcastPlusTierCustomers = assumptions.initialBroadcastPlusTierCustomers.value * Math.pow(2, i);
+        const secondsLicensed = assumptions.initialSecondsLicensed.value * Math.pow(4, i); // Faster growth for usage
 
-        const socialTierRevenue = socialTierCustomers * assumptions.socialTierPrice * 12;
-        const broadcastTierRevenue = broadcastTierCustomers * assumptions.broadcastTierPrice * 12;
-        const broadcastPlusTierRevenue = broadcastPlusTierCustomers * assumptions.broadcastPlusTierPrice * 12;
-        const usageFeeRevenue = secondsLicensed * 1000 * assumptions.usageFeePerSecond;
+        const socialTierRevenue = socialTierCustomers * assumptions.socialTierPrice.value * 12;
+        const broadcastTierRevenue = broadcastTierCustomers * assumptions.broadcastTierPrice.value * 12;
+        const broadcastPlusTierRevenue = broadcastPlusTierCustomers * assumptions.broadcastPlusTierPrice.value * 12;
+        const usageFeeRevenue = secondsLicensed * 1000 * assumptions.usageFeePerSecond.value;
 
         const totalB2BRevenue = socialTierRevenue + broadcastTierRevenue + broadcastPlusTierRevenue + usageFeeRevenue;
 
@@ -47,8 +47,8 @@ export function calculateProjections(assumptions) {
         // Costs & Profitability
         // Simplified cost model: costs grow as a % of the initial revenue ratio
         const initialTotalRevenue = 364640; // From spreadsheet Year 1
-        const cogsRatio = (120000 + 60000) / initialTotalRevenue;
-        const opExRatio = (480000 + 200000 + 170000 + 100000) / initialTotalRevenue;
+        const cogsRatio = (assumptions.contentCreationProcessing.value + assumptions.platformInfrastructure.value) / initialTotalRevenue;
+        const opExRatio = (assumptions.salariesBenefits.value + assumptions.marketingGrowth.value + assumptions.operationsLegal.value + assumptions.technologyInfrastructure.value) / initialTotalRevenue;
 
         const totalCOGS = totalRevenue * cogsRatio;
         const totalOpEx = totalRevenue * opExRatio;

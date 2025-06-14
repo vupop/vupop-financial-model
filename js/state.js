@@ -2,35 +2,35 @@
 
 export const assumptions = {
     // User Growth
-    startingMAU: 0,
-    year1TargetMAU: 0,
-    year2TargetMAU: 0,
-    year3TargetMAU: 0,
-    year4TargetMAU: 0,
-    year5TargetMAU: 0,
+    startingMAU: { value: 0, note: '' },
+    year1TargetMAU: { value: 0, note: '' },
+    year2TargetMAU: { value: 0, note: '' },
+    year3TargetMAU: { value: 0, note: '' },
+    year4TargetMAU: { value: 0, note: '' },
+    year5TargetMAU: { value: 0, note: '' },
     // B2C Pricing
-    premiumSubscriptionPrice: 0,
-    premiumAdoptionRate: 0,
-    adRevenuePerUser: 0,
-    affiliateCommissionRate: 0,
+    premiumSubscriptionPrice: { value: 0, note: '' },
+    premiumAdoptionRate: { value: 0, note: '' },
+    adRevenuePerUser: { value: 0, note: '' },
+    affiliateCommissionRate: { value: 0, note: '' },
     // B2B Pricing
-    socialTierPrice: 0,
-    broadcastTierPrice: 0,
-    broadcastPlusTierPrice: 0,
-    usageFeePerSecond: 0,
+    socialTierPrice: { value: 0, note: '' },
+    broadcastTierPrice: { value: 0, note: '' },
+    broadcastPlusTierPrice: { value: 0, note: '' },
+    usageFeePerSecond: { value: 0, note: '' },
     // B2B Customers (Year 1)
-    initialSocialTierCustomers: 0,
-    initialBroadcastTierCustomers: 0,
-    initialBroadcastPlusTierCustomers: 0,
-    initialSecondsLicensed: 0,
+    initialSocialTierCustomers: { value: 0, note: '' },
+    initialBroadcastTierCustomers: { value: 0, note: '' },
+    initialBroadcastPlusTierCustomers: { value: 0, note: '' },
+    initialSecondsLicensed: { value: 0, note: '' },
     // Costs (COGS)
-    contentCreationProcessing: 0,
-    platformInfrastructure: 0,
+    contentCreationProcessing: { value: 0, note: '' },
+    platformInfrastructure: { value: 0, note: '' },
     // Costs (OpEx)
-    salariesBenefits: 0,
-    marketingGrowth: 0,
-    operationsLegal: 0,
-    technologyInfrastructure: 0,
+    salariesBenefits: { value: 0, note: '' },
+    marketingGrowth: { value: 0, note: '' },
+    operationsLegal: { value: 0, note: '' },
+    technologyInfrastructure: { value: 0, note: '' },
 };
 
 export const state = {
@@ -89,7 +89,11 @@ export function parseFinancialData(htmlText) {
             const mappedKey = assumptionMap[key];
             if (mappedKey) {
                 const rawValue = cells[1].textContent;
-                assumptions[mappedKey] = parseValue(rawValue);
+                const note = cells[3] ? cells[3].textContent.trim() : '';
+                assumptions[mappedKey] = {
+                    value: parseValue(rawValue),
+                    note: note,
+                };
             }
         }
     });
