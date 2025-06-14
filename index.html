@@ -595,6 +595,15 @@
         .card-grid {
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
         }
+        .kpi-summary-card {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 15px;
+        }
+        .kpi-item {
+            font-size: 1.1em;
+        }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
@@ -616,34 +625,38 @@
         </div>
 
         <div class="card-grid">
-            <div class="card metric-card">
+            <div class="card metric-card" data-tooltip="Risk-adjusted value based on scenario probabilities.">
                 <h3>Exit Potential</h3>
-                <div class="metric-value" id="exitPotential">£100M</div>
-                <div class="metric-subtitle">Risk-Adjusted Value</div>
+                <div class="metric-value" id="exitPotential">£81.2M</div>
             </div>
-            <div class="card metric-card">
+            <div class="card metric-card" data-tooltip="Projected annual revenue for Year 4 in the base case scenario.">
                 <h3>Annual Revenue (Y4)</h3>
-                <div class="metric-value" id="annualRevenue">£10M</div>
-                <div class="metric-subtitle">Projected Base Scenario</div>
+                <div class="metric-value" id="annualRevenue">£8.1M</div>
             </div>
-            <div class="card metric-card">
+            <div class="card metric-card" data-tooltip="Projected Monthly Active Users for Year 4.">
                 <h3>Target MAU (Y4)</h3>
                 <div class="metric-value" id="targetMau">500K</div>
-                <div class="metric-subtitle">Monthly Active Users</div>
             </div>
-            <div class="card chart-card">
-                <h3>Key Metrics Over Time</h3>
-                <canvas id="kpiLineChart" height="120"></canvas>
+            <div class="card metric-card" data-tooltip="Customer Acquisition Cost for Year 4.">
+                <h3>CAC (Y4)</h3>
+                <div class="metric-value" id="kpi-cac">£4.00</div>
+            </div>
+
+            <div class="card chart-card" style="grid-column: span 3;">
+                <h3 class="section-title">Key Financials & Growth Over Time</h3>
+                <canvas id="kpiLineChart"></canvas>
+            </div>
+
+            <div class="card kpi-summary-card" style="grid-column: span 1;">
+                <h3 class="section-title">KPIs (Y4)</h3>
+                <div class="kpi-item"><strong>ARPU:</strong> <span id="kpi-arpu">£1.67</span></div>
+                <div class="kpi-item"><strong>B2B LTV:</strong> <span id="kpi-ltv">£110K</span></div>
+                <div class="kpi-item"><strong>LTV/CAC Ratio:</strong> <span id="kpi-ltv-cac">49:1</span></div>
+                <div class="kpi-item"><strong>Retention:</strong> <span id="kpi-retention">92%</span></div>
+            </div>
+            
+            <div id="kpiLegendContainer" class="card" style="grid-column: span 4; padding: 10px 15px;">
                 <div id="kpiLegend" class="kpi-legend"></div>
-            </div>
-            <div class="card kpi-card">
-                <h4>Customer Acquisition Cost</h4><div class="kpi-value" id="kpi-cac">£4.00</div>
-            </div>
-            <div class="card table-card" style="grid-column: span 3;">
-                <h3 class="section-title">Exit Valuation Scenarios</h3>
-                <table id="scenarioTable" class="financial-table">
-                    <!-- ... scenario table structure ... -->
-                </table>
             </div>
             <div class="card table-card" style="grid-column: span 4;">
                 <h3 class="section-title">Market Comparables (Media/Social Media)</h3>
@@ -844,47 +857,10 @@
                 data: {
                     labels: data.labels,
                     datasets: [
-                        {
-                            label: 'Exit Potential',
-                            data: data.exit,
-                            borderColor: kpiColors.exit,
-                            backgroundColor: 'rgba(255, 247, 0, 0.08)',
-                            tension: 0.3,
-                            pointRadius: 3,
-                            fill: false,
-                            hidden: !kpiVisibility.exit
-                        },
-                        {
-                            label: 'Revenue',
-                            data: data.revenue,
-                            borderColor: kpiColors.revenue,
-                            backgroundColor: 'rgba(0,230,255,0.08)',
-                            tension: 0.3,
-                            pointRadius: 3,
-                            fill: false,
-                            hidden: !kpiVisibility.revenue
-                        },
-                        {
-                            label: 'MAU',
-                            data: data.mau,
-                            borderColor: kpiColors.mau,
-                            backgroundColor: 'rgba(186,218,85,0.08)',
-                            tension: 0.3,
-                            pointRadius: 3,
-                            fill: false,
-                            hidden: !kpiVisibility.mau
-                        },
-                        {
-                            label: 'Growth Rate',
-                            data: data.growth,
-                            borderColor: kpiColors.growth,
-                            backgroundColor: 'rgba(255,179,0,0.08)',
-                            tension: 0.3,
-                            pointRadius: 3,
-                            fill: false,
-                            yAxisID: 'y2',
-                            hidden: !kpiVisibility.growth
-                        }
+                        { label: 'Exit Potential (£M)', data: data.exit, borderColor: '#fff700', yAxisID: 'y' },
+                        { label: 'Revenue (£M)', data: data.revenue, borderColor: '#00e6ff', yAxisID: 'y' },
+                        { label: 'OPEX (£M)', data: data.opex, borderColor: '#ff6384', yAxisID: 'y' },
+                        { label: 'MAU (K)', data: data.mau, borderColor: '#bada55', yAxisID: 'y2' }
                     ]
                 },
                 options: {
@@ -893,13 +869,8 @@
                         legend: { display: false }
                     },
                     scales: {
-                        y: { beginAtZero: true, title: { display: true, text: '£ / Users' } },
-                        y2: {
-                            beginAtZero: true,
-                            position: 'right',
-                            grid: { drawOnChartArea: false },
-                            title: { display: true, text: 'Growth %' }
-                        }
+                        y: { type: 'linear', position: 'left', title: { display: true, text: 'Value (£M)' } },
+                        y2: { type: 'linear', position: 'right', title: { display: true, text: 'Users (K)' }, grid: { drawOnChartArea: false } }
                     }
                 }
             });
@@ -972,6 +943,7 @@
             const exitValuations = [];
             const revenueStreams = [];
             const growthRates = [];
+            const opexValues = [];
 
             // Static assumptions from model
             const socialCustomers = [3, 5, 15, 25, 40];
@@ -997,6 +969,7 @@
                 const totalCogs = totalRevenue * cogsPerc[i];
                 const grossProfit = totalRevenue - totalCogs;
                 const ebitda = grossProfit - opex[i];
+                opexValues.push(opex[i] / 1_000_000); // Store OPEX in millions
 
                 // Valuation (10x current year's revenue)
                 const valuation = totalRevenue * 10;
@@ -1015,14 +988,15 @@
             document.getElementById('exitPotential').textContent = `£${(yearlyResults[3].valuation / 1_000_000).toFixed(1)}M`;
             document.getElementById('annualRevenue').textContent = `£${(yearlyResults[3].totalRevenue / 1_000_000).toFixed(1)}M`;
             document.getElementById('targetMau').textContent = `${(inputs.mauTargets[3] / 1000).toFixed(0)}K`;
+            document.getElementById('kpi-cac').textContent = `£${yearlyResults[3].ebitda.toFixed(2)}`;
 
             // Update the KPI Line Chart
             const kpiData = {
-                labels: ['Year 1', 'Year 2', 'Year 3', 'Year 4', 'Year 5'],
+                labels: ['Y1', 'Y2', 'Y3', 'Y4', 'Y5'],
                 exit: exitValuations,
                 revenue: revenueStreams,
-                mau: inputs.mauTargets.map(m => m / 1000), // Show MAU in thousands
-                growth: growthRates
+                mau: inputs.mauTargets.map(m => m / 1000), // In thousands
+                opex: opexValues
             };
             updateKpiLineChart(kpiData);
         }
