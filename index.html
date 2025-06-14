@@ -119,8 +119,8 @@
             letter-spacing: 1px;
         }
         .button:hover {
-            background: var(--white);
-            color: var(--black);
+            background-color: #555;
+            transform: translateY(-2px);
         }
         .metrics-grid {
             display: grid;
@@ -566,24 +566,21 @@
             max-width: 1200px; /* Wider for compact 3-column */
             padding: 15px 25px;
         }
-        #assumptionsInputs.controls-panel {
-            gap: 10px 30px; /* Adjust gap */
+        .assumptions-panel .controls-panel {
+            display: flex;
+            justify-content: space-between;
+            gap: 25px;
         }
-        .assumptions-column {
-            gap: 10px;
+
+        .assumptions-panel .assumptions-column {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
         }
-        .assumptions-column .section-title {
-            font-size: 1em;
-            margin-bottom: 4px;
-            padding-bottom: 3px;
-        }
-        .input-group label {
-            font-size: 0.75em;
-            margin-bottom: 2px;
-        }
-        .input-group input {
-            font-size: 0.8em;
-            padding: 6px;
+
+        #assumptionsInputs {
+            border: none !important; /* remove diagnostic style */
         }
         .tooltip-text {
             width: 220px;
@@ -626,7 +623,7 @@
         <div class="dashboard-header">
             <h1>Vupop Financial Dashboard</h1>
             <div class="header-actions">
-                <button id="toggleAssumptionsBtn">Adjust Assumptions</button>
+                <button id="adjustAssumptionsBtn" class="button">Adjust Assumptions</button>
             </div>
         </div>
 
@@ -708,40 +705,43 @@
     
     <div id="assumptionsPanel" class="assumptions-panel">
         <div class="assumptions-content">
+            <button id="closeAssumptions" class="close-btn">&times;</button>
             <h2 class="section-title">Adjust Key Assumptions</h2>
-            <div id="assumptionsInputs" class="controls-panel">
-                <div class="assumptions-column">
-                    <h4 class="section-title">User Growth</h4>
-                    <div class="input-group"><label for="startingMAU">Starting MAU</label><input type="number" id="startingMAU" value="1000"></div>
-                    <div class="input-group"><label for="mau1">Year 1 Target MAU</label><input type="number" id="mau1" value="50000"></div>
-                    <div class="input-group"><label for="mau2">Year 2 Target MAU</label><input type="number" id="mau2" value="150000"></div>
-                    <div class="input-group"><label for="mau3">Year 3 Target MAU</label><input type="number" id="mau3" value="313000"></div>
-                    <div class="input-group"><label for="mau4">Year 4 Target MAU</label><input type="number" id="mau4" value="500000"></div>
-                    <div class="input-group"><label for="mau5">Year 5 Target MAU</label><input type="number" id="mau5" value="750000"></div>
-                </div>
-                <div class="assumptions-column">
-                    <h4 class="section-title">B2C & B2B Pricing</h4>
-                    <div class="input-group"><label for="premiumPrice">Premium Subscription Price (£)</label><input type="number" id="premiumPrice" value="0.99"></div>
-                    <div class="input-group"><label for="adoptionRate">Premium Adoption Rate (%)</label><input type="number" id="adoptionRate" value="10"></div>
-                    <div class="input-group"><label for="adRevenue">Ad Revenue per User (£)</label><input type="number" id="adRevenue" value="0.45"></div>
-                    <div class="input-group"><label for="affiliateRate">Affiliate Commission Rate (%)</label><input type="number" id="affiliateRate" value="5.00"></div>
-                    <div class="input-group"><label for="socialTierPrice">Social Tier Price (£)</label><input type="number" id="socialTierPrice" value="999"></div>
-                    <div class="input-group"><label for="broadcastTierPrice">Broadcast Tier Price (£)</label><input type="number" id="broadcastTierPrice" value="3499"></div>
-                    <div class="input-group"><label for="broadcastPlusTierPrice">Broadcast+ Tier Price (£)</label><input type="number" id="broadcastPlusTierPrice" value="4997"></div>
-                </div>
-                <div class="assumptions-column">
-                    <h4 class="section-title">Costs & Scenarios</h4>
-                    <div class="input-group"><label for="marketingSpend1">Year 1 Marketing Spend (£)</label><input type="number" id="marketingSpend1" value="200000"></div>
-                    <div class="input-group"><label for="marketingSpend2">Year 2 Marketing Spend (£)</label><input type="number" id="marketingSpend2" value="400000"></div>
-                    <div class="input-group"><label for="marketingSpend3">Year 3 Marketing Spend (£)</label><input type="number" id="marketingSpend3" value="600000"></div>
-                    <div class="input-group"><label for="marketingSpend4">Year 4 Marketing Spend (£)</label><input type="number" id="marketingSpend4" value="800000"></div>
-                    <div class="input-group"><label for="marketingSpend5">Year 5 Marketing Spend (£)</label><input type="number" id="marketingSpend5" value="1000000"></div>
-                    <div class="input-group"><label for="probConservative">Conservative Scenario Probability (%)</label><input type="number" id="probConservative" value="30"></div>
-                    <div class="input-group"><label for="probBase">Base Case Scenario Probability (%)</label><input type="number" id="probBase" value="50"></div>
-                    <div class="input-group"><label for="probOptimistic">Optimistic Scenario Probability (%)</label><input type="number" id="probOptimistic" value="20"></div>
+            <div id="assumptionsInputs">
+                <div class="controls-panel">
+                    <div class="assumptions-column">
+                        <h4 class="section-title">User Growth</h4>
+                        <div class="input-group"><label for="startingMAU">Starting MAU</label><input type="number" id="startingMAU" value="1000"></div>
+                        <div class="input-group"><label for="mau1">Year 1 Target MAU</label><input type="number" id="mau1" value="50000"></div>
+                        <div class="input-group"><label for="mau2">Year 2 Target MAU</label><input type="number" id="mau2" value="150000"></div>
+                        <div class="input-group"><label for="mau3">Year 3 Target MAU</label><input type="number" id="mau3" value="313000"></div>
+                        <div class="input-group"><label for="mau4">Year 4 Target MAU</label><input type="number" id="mau4" value="500000"></div>
+                        <div class="input-group"><label for="mau5">Year 5 Target MAU</label><input type="number" id="mau5" value="750000"></div>
+                    </div>
+                    <div class="assumptions-column">
+                        <h4 class="section-title">B2C & B2B Pricing</h4>
+                        <div class="input-group"><label for="premiumPrice">Premium Subscription Price (£)</label><input type="number" id="premiumPrice" value="0.99"></div>
+                        <div class="input-group"><label for="adoptionRate">Premium Adoption Rate (%)</label><input type="number" id="adoptionRate" value="10"></div>
+                        <div class="input-group"><label for="adRevenue">Ad Revenue per User (£)</label><input type="number" id="adRevenue" value="0.45"></div>
+                        <div class="input-group"><label for="affiliateRate">Affiliate Commission Rate (%)</label><input type="number" id="affiliateRate" value="5.00"></div>
+                        <div class="input-group"><label for="socialTierPrice">Social Tier Price (£)</label><input type="number" id="socialTierPrice" value="999"></div>
+                        <div class="input-group"><label for="broadcastTierPrice">Broadcast Tier Price (£)</label><input type="number" id="broadcastTierPrice" value="3499"></div>
+                        <div class="input-group"><label for="broadcastPlusTierPrice">Broadcast+ Tier Price (£)</label><input type="number" id="broadcastPlusTierPrice" value="4997"></div>
+                    </div>
+                    <div class="assumptions-column">
+                        <h4 class="section-title">Costs & Scenarios</h4>
+                        <div class="input-group"><label for="marketingSpend1">Year 1 Marketing Spend (£)</label><input type="number" id="marketingSpend1" value="200000"></div>
+                        <div class="input-group"><label for="marketingSpend2">Year 2 Marketing Spend (£)</label><input type="number" id="marketingSpend2" value="400000"></div>
+                        <div class="input-group"><label for="marketingSpend3">Year 3 Marketing Spend (£)</label><input type="number" id="marketingSpend3" value="600000"></div>
+                        <div class="input-group"><label for="marketingSpend4">Year 4 Marketing Spend (£)</label><input type="number" id="marketingSpend4" value="800000"></div>
+                        <div class="input-group"><label for="marketingSpend5">Year 5 Marketing Spend (£)</label><input type="number" id="marketingSpend5" value="1000000"></div>
+                        <div class="input-group"><label for="probConservative">Conservative Scenario Probability (%)</label><input type="number" id="probConservative" value="30"></div>
+                        <div class="input-group"><label for="probBase">Base Case Scenario Probability (%)</label><input type="number" id="probBase" value="50"></div>
+                        <div class="input-group"><label for="probOptimistic">Optimistic Scenario Probability (%)</label><input type="number" id="probOptimistic" value="20"></div>
+                    </div>
                 </div>
             </div>
-            <button id="updateDashboardBtn" class="button">Update Dashboard & Close</button>
+            <button id="updateButton">Update Dashboard</button>
         </div>
     </div>
     <script>
@@ -912,11 +912,15 @@
         };
         updateKpiLineChart(kpiData);
 
-        document.getElementById('toggleAssumptionsBtn').addEventListener('click', () => {
+        document.getElementById('adjustAssumptionsBtn').addEventListener('click', () => {
             document.getElementById('assumptionsPanel').style.display = 'flex'; // Use flex to show
         });
 
-        document.getElementById('updateDashboardBtn').addEventListener('click', () => {
+        document.getElementById('closeAssumptions').addEventListener('click', () => {
+            document.getElementById('assumptionsPanel').style.display = 'none';
+        });
+
+        document.getElementById('updateButton').addEventListener('click', () => {
             calculateProjections(); // Recalculate everything
             document.getElementById('assumptionsPanel').style.display = 'none'; // Hide panel
         });
