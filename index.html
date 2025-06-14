@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Vupop Financial Model - Interactive financial analysis and projection tool">
+    <meta name="theme-color" content="#4f46e5">
     <title>Vupop Financial Model - Interactive</title>
     <style>
         * {
@@ -311,15 +313,15 @@
                 <h2 class="section-title">Input Parameters</h2>
                 <div class="input-group">
                     <label for="revenue">Annual Revenue ($)</label>
-                    <input type="number" id="revenue" placeholder="Enter annual revenue" class="tooltip" data-tooltip="Enter your projected annual revenue">
+                    <input type="number" id="revenue" placeholder="Enter annual revenue" class="tooltip" data-tooltip="Enter your projected annual revenue" min="0" step="1000">
                 </div>
                 <div class="input-group">
                     <label for="growth">Growth Rate (%)</label>
-                    <input type="number" id="growth" placeholder="Enter growth rate" class="tooltip" data-tooltip="Expected annual growth rate">
+                    <input type="number" id="growth" placeholder="Enter growth rate" class="tooltip" data-tooltip="Expected annual growth rate" min="0" max="100" step="1">
                 </div>
                 <div class="input-group">
                     <label for="margin">Profit Margin (%)</label>
-                    <input type="number" id="margin" placeholder="Enter profit margin" class="tooltip" data-tooltip="Expected profit margin">
+                    <input type="number" id="margin" placeholder="Enter profit margin" class="tooltip" data-tooltip="Expected profit margin" min="0" max="100" step="1">
                 </div>
                 <button class="button" onclick="calculateMetrics()">Calculate Projections</button>
             </div>
@@ -346,19 +348,21 @@
 
                 <div class="chart-container">
                     <h3 class="section-title">Financial Projections</h3>
-                    <table class="financial-table">
-                        <thead>
-                            <tr>
-                                <th>Year</th>
-                                <th>Revenue</th>
-                                <th>Profit</th>
-                                <th>Growth</th>
-                            </tr>
-                        </thead>
-                        <tbody id="projectionsTable">
-                            <!-- Table content will be populated by JavaScript -->
-                        </tbody>
-                    </table>
+                    <div class="table-responsive">
+                        <table class="financial-table">
+                            <thead>
+                                <tr>
+                                    <th>Year</th>
+                                    <th>Revenue</th>
+                                    <th>Profit</th>
+                                    <th>Growth</th>
+                                </tr>
+                            </thead>
+                            <tbody id="projectionsTable">
+                                <!-- Table content will be populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
 
                 <div class="exit-highlight" id="exitValuation">
@@ -371,6 +375,27 @@
     </div>
 
     <script>
+        // Add input validation
+        function validateInput(input) {
+            const value = parseFloat(input.value);
+            const min = parseFloat(input.min);
+            const max = parseFloat(input.max);
+            
+            if (value < min) input.value = min;
+            if (value > max) input.value = max;
+        }
+
+        // Add event listeners for input validation
+        document.getElementById('revenue').addEventListener('change', function() {
+            validateInput(this);
+        });
+        document.getElementById('growth').addEventListener('change', function() {
+            validateInput(this);
+        });
+        document.getElementById('margin').addEventListener('change', function() {
+            validateInput(this);
+        });
+
         function calculateMetrics() {
             // Get input values
             const revenue = parseFloat(document.getElementById('revenue').value) || 0;
@@ -411,6 +436,15 @@
                 maximumFractionDigits: 0
             }).format(num);
         }
+
+        // Add keyboard support for accessibility
+        document.querySelectorAll('input').forEach(input => {
+            input.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    calculateMetrics();
+                }
+            });
+        });
     </script>
 </body>
 </html>
