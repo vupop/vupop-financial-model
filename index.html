@@ -898,8 +898,108 @@
         });
 
         document.getElementById('updateDashboardBtn').addEventListener('click', () => {
-            // calculateProjections(); // This function needs to be defined/re-enabled
+            calculateProjections();
             document.getElementById('assumptionsPanel').style.display = 'none';
+        });
+
+        function calculateProjections() {
+            // --- 1. Read All Inputs ---
+            const inputs = {
+                startingMAU: parseInt(document.getElementById('startingMAU').value) || 0,
+                mauTargets: [
+                    parseInt(document.getElementById('mau1').value) || 0,
+                    parseInt(document.getElementById('mau2').value) || 0,
+                    parseInt(document.getElementById('mau3').value) || 0,
+                    parseInt(document.getElementById('mau4').value) || 0,
+                    parseInt(document.getElementById('mau5').value) || 0
+                ],
+                premiumPrice: parseFloat(document.getElementById('premiumPrice').value) || 0,
+                adoptionRate: parseFloat(document.getElementById('adoptionRate').value) || 0,
+                adRevenue: parseFloat(document.getElementById('adRevenue').value) || 0,
+                affiliateRate: parseFloat(document.getElementById('affiliateRate').value) || 0,
+                socialTierPrice: parseFloat(document.getElementById('socialTierPrice').value) || 0,
+                broadcastTierPrice: parseFloat(document.getElementById('broadcastTierPrice').value) || 0,
+                broadcastPlusTierPrice: parseFloat(document.getElementById('broadcastPlusTierPrice').value) || 0,
+                usageFee: parseFloat(document.getElementById('usageFee').value) || 0,
+                // Also read marketing spend and scenario probs when those inputs are added back
+            };
+
+            // --- 2. Perform Year-by-Year Calculations ---
+            const yearlyResults = [];
+            const exitValuations = [];
+            const revenueStreams = [];
+            const growthRates = [];
+
+            // Static assumptions from model
+            const socialCustomers = [3, 5, 15, 25, 40];
+            const broadcastCustomers = [3, 8, 15, 25, 35];
+            const broadcastPlusCustomers = [1, 3, 5, 8, 10];
+            const usageSeconds = [2900, 25000, 100000, 250000, 450000];
+            const opex = [950000, 1900000, 3200000, 5200000, 7500000];
+            const cogsPerc = [0.49, 0.40, 0.30, 0.28, 0.25];
+
+            for (let i = 0; i < 5; i++) {
+                const mau = inputs.mauTargets[i];
+                // Revenue
+                const premiumRev = mau * (inputs.adoptionRate / 100) * inputs.premiumPrice * 12;
+                const adRev = i >= 2 ? mau * inputs.adRevenue * 12 : 0;
+                const socialRev = socialCustomers[i] * inputs.socialTierPrice * 12;
+                const broadcastRev = broadcastCustomers[i] * inputs.broadcastTierPrice * 12;
+                const broadcastPlusRev = broadcastPlusCustomers[i] * inputs.broadcastPlusTierPrice * 12;
+                const usageRev = usageSeconds[i] * inputs.usageFee;
+                const totalRevenue = premiumRev + adRev + socialRev + broadcastRev + broadcastPlusRev + usageRev;
+                revenueStreams.push(totalRevenue / 1_000_000); // For chart in millions
+
+                // Costs & Profit
+                const totalCogs = totalRevenue * cogsPerc[i];
+                const grossProfit = totalRevenue - totalCogs;
+                const ebitda = grossProfit - opex[i];
+
+                // Valuation (10x current year's revenue)
+                const valuation = totalRevenue * 10;
+                exitValuations.push(valuation / 1_000_000); // For chart in millions
+
+                // Growth Rate
+                const prevMau = i > 0 ? inputs.mauTargets[i-1] : inputs.startingMAU;
+                const growth = prevMau > 0 ? ((mau - prevMau) / prevMau) * 100 : 0;
+                growthRates.push(growth);
+                
+                yearlyResults.push({ totalRevenue, ebitda, valuation });
+            }
+
+            // --- 3. Update Dashboard UI ---
+            // Update Key Metric Cards (using Year 4 data as the key year)
+            document.getElementById('exitPotential').textContent = `£${(yearlyResults[3].valuation / 1_000_000).toFixed(1)}M`;
+            document.getElementById('annualRevenue').textContent = `£${(yearlyResults[3].totalRevenue / 1_000_000).toFixed(1)}M`;
+            document.getElementById('targetMau').textContent = `${(inputs.mauTargets[3] / 1000).toFixed(0)}K`;
+
+            // Update the KPI Line Chart
+            const kpiData = {
+                labels: ['Year 1', 'Year 2', 'Year 3', 'Year 4', 'Year 5'],
+                exit: exitValuations,
+                revenue: revenueStreams,
+                mau: inputs.mauTargets.map(m => m / 1000), // Show MAU in thousands
+                growth: growthRates
+            };
+            updateKpiLineChart(kpiData);
+        }
+
+        // Run calculations on page load
+        window.onload = () => {
+            // We need to handle the password overlay first
+            const passwordForm = document.getElementById('passwordForm');
+            if (passwordForm) {
+                passwordForm.addEventListener('submit', (event) => {
+                    if (checkPassword(event)) {
+                         calculateProjections();
+                    }
+                });
+            }
+        };
+
+        // Add event listeners to all inputs to recalculate on change
+        document.querySelectorAll('#assumptionsInputs input').forEach(input => {
+            input.addEventListener('change', calculateProjections);
         });
     </script>
 </body>
