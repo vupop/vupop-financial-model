@@ -633,9 +633,59 @@
             const broadcastTierPrice = parseFloat(document.getElementById('broadcastTierPrice').value) || 0;
             const broadcastPlusTierPrice = parseFloat(document.getElementById('broadcastPlusTierPrice').value) || 0;
             const usageFee = parseFloat(document.getElementById('usageFee').value) || 0;
-            // Example: update a metric with new input
-            document.getElementById('projectedRevenue').textContent = `£${formatNumber(mauTargets[3] * premiumPrice * (adoptionRate/100) * 12)}`;
-            // You can expand this logic to update all metrics and tables as needed
+
+            // --- Key Metrics ---
+            // Projected Revenue (Year 4)
+            const projectedRevenue = mauTargets[3] * premiumPrice * (adoptionRate/100) * 12;
+            document.getElementById('projectedRevenue').textContent = `£${formatNumber(projectedRevenue)}`;
+            // Profit Potential (Year 4, assume 20% margin for demo)
+            const profitPotential = projectedRevenue * 0.2;
+            document.getElementById('profitPotential').textContent = `£${formatNumber(profitPotential)}`;
+            // Growth Rate (Year 4 vs Year 3)
+            const growthRate = mauTargets[2] > 0 ? ((mauTargets[3] - mauTargets[2]) / mauTargets[2]) * 100 : 0;
+            document.getElementById('growthRate').textContent = `${growthRate.toFixed(1)}%`;
+            // Exit Valuation (10x Year 4 revenue)
+            document.getElementById('exitValuation').querySelector('.metric-value').textContent = `£${formatNumber(projectedRevenue * 10)}`;
+
+            // --- Financial Projections Table ---
+            let tableBody = document.getElementById('projectionsTable');
+            tableBody.innerHTML = '';
+            for (let i = 0; i < 5; i++) {
+                // For demo: revenue = MAU * premiumPrice * adoptionRate * 12
+                const revenue = mauTargets[i] * premiumPrice * (adoptionRate/100) * 12;
+                // Profit = revenue * 20%
+                const profit = revenue * 0.2;
+                // Growth = (this year MAU - last year MAU) / last year MAU
+                const growth = i > 0 && mauTargets[i-1] > 0 ? ((mauTargets[i] - mauTargets[i-1]) / mauTargets[i-1]) * 100 : 0;
+                let row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>Year ${i+1}</td>
+                    <td>£${formatNumber(revenue)}</td>
+                    <td>£${formatNumber(profit)}</td>
+                    <td>${growth.toFixed(1)}%</td>
+                `;
+                tableBody.appendChild(row);
+            }
+
+            // --- Dynamic KPIs ---
+            // CAC (demo: fixed or could be revenue/MAU)
+            const cac = 4.00; // Placeholder, can be made dynamic
+            document.querySelector('.kpi-card:nth-child(1) .kpi-value').textContent = `£${cac.toFixed(2)}`;
+            // ARPU (Annual Revenue / MAU)
+            const arpu = mauTargets[3] > 0 ? projectedRevenue / mauTargets[3] / 12 : 0;
+            document.querySelector('.kpi-card:nth-child(2) .kpi-value').textContent = `£${arpu.toFixed(2)}`;
+            // B2B LTV (demo: fixed or could be ARPU * 66)
+            const b2bLTV = 110000; // Placeholder
+            document.querySelector('.kpi-card:nth-child(3) .kpi-value').textContent = `£${Math.round(b2bLTV/1000)}K`;
+            // LTV/CAC Ratio
+            const ltvCac = cac > 0 ? (b2bLTV / cac).toFixed(1) : 'N/A';
+            document.querySelector('.kpi-card:nth-child(4) .kpi-value').textContent = `${ltvCac}:1`;
+            // Monthly Churn Rate (demo: fixed)
+            const churn = 8; // Placeholder
+            document.querySelector('.kpi-card:nth-child(5) .kpi-value').textContent = `${churn}%`;
+            // Content Upload Rate (demo: fixed)
+            const uploads = '5K/day'; // Placeholder
+            document.querySelector('.kpi-card:nth-child(6) .kpi-value').textContent = uploads;
         }
         document.querySelectorAll('input').forEach(input => {
             input.addEventListener('keypress', function(e) {
@@ -643,6 +693,7 @@
                     calculateProjections();
                 }
             });
+            input.addEventListener('change', calculateProjections);
         });
     </script>
 </body>
