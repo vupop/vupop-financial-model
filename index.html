@@ -563,24 +563,22 @@
         }
         .assumptions-content {
             background: var(--gray);
-            max-width: 900px;
+            max-width: 1100px;
             margin: auto;
             padding: 30px;
             border-radius: 16px;
             border: 2px solid var(--yellow);
         }
         #assumptionsInputs {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px 25px;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 12px 20px;
         }
         .input-group label {
-            font-size: 0.9em;
-            font-weight: 600;
+            font-size: 0.85em;
         }
         .input-group input {
-            font-size: 0.95em;
-            padding: 10px;
+            font-size: 0.9em;
+            padding: 8px;
         }
         .tooltip-text {
             width: 220px;
@@ -694,7 +692,7 @@
         <div class="assumptions-content">
             <h2 class="section-title">Adjust Key Assumptions</h2>
             <div id="assumptionsInputs" class="controls-panel">
-                <!-- Column 1 -->
+                <!-- Column 1: User Growth -->
                 <div>
                     <h4 class="section-title">User Growth</h4>
                     <div class="input-group"><label for="startingMAU">Starting MAU</label><input type="number" id="startingMAU" value="1000" data-tooltip="The number of Monthly Active Users (MAU) at the beginning of Year 1."></div>
@@ -704,7 +702,7 @@
                     <div class="input-group"><label for="mau4">Year 4 Target MAU</label><input type="number" id="mau4" value="500000" data-tooltip="Revenue and scale target for Year 4."></div>
                     <div class="input-group"><label for="mau5">Year 5 Target MAU</label><input type="number" id="mau5" value="750000" data-tooltip="Projected MAU showing extended growth potential."></div>
                 </div>
-                <!-- Column 2 -->
+                <!-- Column 2: B2C & B2B Pricing -->
                 <div>
                     <h4 class="section-title">B2C & B2B Pricing</h4>
                     <div class="input-group"><label for="premiumPrice">Premium Subscription Price (£)</label><input type="number" id="premiumPrice" value="0.99" data-tooltip="Monthly price for the B2C premium subscription."></div>
@@ -715,6 +713,14 @@
                     <div class="input-group"><label for="broadcastTierPrice">Broadcast Tier Price (£)</label><input type="number" id="broadcastTierPrice" value="3499" data-tooltip="Monthly subscription price for B2B broadcast clients."></div>
                     <div class="input-group"><label for="broadcastPlusTierPrice">Broadcast+ Tier Price (£)</label><input type="number" id="broadcastPlusTierPrice" value="4997" data-tooltip="Monthly subscription price for premium B2B broadcast clients."></div>
                     <div class="input-group"><label for="usageFee">Usage Fee per Second (£)</label><input type="number" id="usageFee" value="12" data-tooltip="Fee charged per second for specific data export/usage features."></div>
+                </div>
+                <!-- Column 3: Scenarios & Costs -->
+                <div>
+                    <h4 class="section-title">Scenarios & Costs</h4>
+                    <div class="input-group"><label for="probConservative">Conservative Scenario Probability (%)</label><input type="number" id="probConservative" value="30" data-tooltip="Likelihood of the conservative (lower revenue) scenario occurring."></div>
+                    <div class="input-group"><label for="probBase">Base Case Scenario Probability (%)</label><input type="number" id="probBase" value="50" data-tooltip="Likelihood of the base case (expected) scenario occurring."></div>
+                    <div class="input-group"><label for="probOptimistic">Optimistic Scenario Probability (%)</label><input type="number" id="probOptimistic" value="20" data-tooltip="Likelihood of the optimistic (higher revenue) scenario occurring."></div>
+                    <!-- Note: Cost inputs can be added here if they become editable -->
                 </div>
             </div>
             <button id="updateDashboardBtn" class="button">Update Dashboard & Close</button>
@@ -958,7 +964,11 @@
                 broadcastTierPrice: parseFloat(document.getElementById('broadcastTierPrice').value) || 0,
                 broadcastPlusTierPrice: parseFloat(document.getElementById('broadcastPlusTierPrice').value) || 0,
                 usageFee: parseFloat(document.getElementById('usageFee').value) || 0,
-                // Also read marketing spend and scenario probs when those inputs are added back
+                scenarioProbs: [
+                    parseFloat(document.getElementById('probConservative').value) || 0,
+                    parseFloat(document.getElementById('probBase').value) || 0,
+                    parseFloat(document.getElementById('probOptimistic').value) || 0
+                ]
             };
 
             // --- 2. Perform Year-by-Year Calculations ---
