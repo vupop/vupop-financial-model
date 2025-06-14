@@ -569,9 +569,15 @@
             border-radius: 16px;
             border: 2px solid var(--yellow);
         }
-        #assumptionsInputs {
+        #assumptionsInputs.controls-panel {
+            display: grid;
             grid-template-columns: 1fr 1fr 1fr;
-            gap: 12px 20px;
+            gap: 15px 25px;
+        }
+        .assumptions-column {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
         }
         .input-group label {
             font-size: 0.85em;
@@ -692,8 +698,7 @@
         <div class="assumptions-content">
             <h2 class="section-title">Adjust Key Assumptions</h2>
             <div id="assumptionsInputs" class="controls-panel">
-                <!-- Column 1: User Growth -->
-                <div>
+                <div class="assumptions-column">
                     <h4 class="section-title">User Growth</h4>
                     <div class="input-group"><label for="startingMAU">Starting MAU</label><input type="number" id="startingMAU" value="1000" data-tooltip="The number of Monthly Active Users (MAU) at the beginning of Year 1."></div>
                     <div class="input-group"><label for="mau1">Year 1 Target MAU</label><input type="number" id="mau1" value="50000" data-tooltip="Projected MAU at the end of Year 1."></div>
@@ -702,8 +707,7 @@
                     <div class="input-group"><label for="mau4">Year 4 Target MAU</label><input type="number" id="mau4" value="500000" data-tooltip="Revenue and scale target for Year 4."></div>
                     <div class="input-group"><label for="mau5">Year 5 Target MAU</label><input type="number" id="mau5" value="750000" data-tooltip="Projected MAU showing extended growth potential."></div>
                 </div>
-                <!-- Column 2: B2C & B2B Pricing -->
-                <div>
+                <div class="assumptions-column">
                     <h4 class="section-title">B2C & B2B Pricing</h4>
                     <div class="input-group"><label for="premiumPrice">Premium Subscription Price (£)</label><input type="number" id="premiumPrice" value="0.99" data-tooltip="Monthly price for the B2C premium subscription."></div>
                     <div class="input-group"><label for="adoptionRate">Premium Adoption Rate (%)</label><input type="number" id="adoptionRate" value="10" data-tooltip="The percentage of MAU expected to subscribe to premium."></div>
@@ -714,8 +718,7 @@
                     <div class="input-group"><label for="broadcastPlusTierPrice">Broadcast+ Tier Price (£)</label><input type="number" id="broadcastPlusTierPrice" value="4997" data-tooltip="Monthly subscription price for premium B2B broadcast clients."></div>
                     <div class="input-group"><label for="usageFee">Usage Fee per Second (£)</label><input type="number" id="usageFee" value="12" data-tooltip="Fee charged per second for specific data export/usage features."></div>
                 </div>
-                <!-- Column 3: Scenarios & Costs -->
-                <div>
+                <div class="assumptions-column">
                     <h4 class="section-title">Scenarios & Costs</h4>
                     <div class="input-group"><label for="probConservative">Conservative Scenario Probability (%)</label><input type="number" id="probConservative" value="30" data-tooltip="Likelihood of the conservative (lower revenue) scenario occurring."></div>
                     <div class="input-group"><label for="probBase">Base Case Scenario Probability (%)</label><input type="number" id="probBase" value="50" data-tooltip="Likelihood of the base case (expected) scenario occurring."></div>
