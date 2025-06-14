@@ -457,9 +457,14 @@
             align-items: center;
             margin-bottom: 24px;
         }
+        .dashboard-header .logo {
+            height: 40px; /* Adjust as needed */
+            width: auto;
+        }
         .dashboard-header h1 {
             font-size: 2em;
             color: var(--yellow);
+            margin: 0 auto; /* Center title */
         }
         .header-actions button {
             background: var(--yellow);
@@ -681,6 +686,7 @@
     </div>
     <div id="mainContent" class="main-content" style="display:none;">
         <div class="dashboard-header">
+            <img src="logo.png" alt="Vupop Logo" class="logo">
             <h1>Vupop Financial Dashboard</h1>
             <div class="header-actions">
                 <button id="adjustAssumptionsBtn" class="button">Adjust Assumptions</button>
@@ -1034,51 +1040,58 @@
                 const socialRev = socialCustomers[i] * inputs.socialTierPrice * 12;
                 const broadcastRev = broadcastCustomers[i] * inputs.broadcastTierPrice * 12;
                 const broadcastPlusRev = broadcastPlusCustomers[i] * inputs.broadcastPlusTierPrice * 12;
-                const usageRev = usageSeconds[i] * inputs.usageFee;
+                const usageRev = (i > 1 ? usageSeconds[i] * inputs.usageFee : 0); // Corrected usage fee logic
                 const totalRevenue = premiumRev + adRev + socialRev + broadcastRev + broadcastPlusRev + usageRev;
-                revenueStreams.push(totalRevenue / 1_000_000); // For chart in millions
-
+                
                 // Costs & Profit
                 const totalCogs = totalRevenue * cogsPerc[i];
                 const grossProfit = totalRevenue - totalCogs;
                 const ebitda = grossProfit - opex[i];
-                opexValues.push(opex[i] / 1_000_000); // Store OPEX in millions
-
-                // Valuation (10x current year's revenue)
+                
+                // Valuation (10x current year's revenue as base)
                 const valuation = totalRevenue * 10;
-                exitValuations.push(valuation / 1_000_000); // For chart in millions
-                revenueStreams.push(totalRevenue / 1_000_000); // In millions
-                mauValues.push(inputs.mauTargets[i] / 1000); // In thousands
-                opexValues.push(opex[i] / 1_000_000); // In millions
-
-                // Store the full, unformatted numbers for later use
-                yearlyResults.push({ totalRevenue, ebitda, valuation, cac: ebitda });
+                
+                // Store results for this year
+                yearlyResults.push({ totalRevenue, ebitda, valuation });
+                
+                // Prepare data for chart (in millions or thousands)
+                revenueStreams.push(totalRevenue / 1_000_000);
+                mauValues.push(mau / 1000);
+                opexValues.push(opex[i] / 1_000_000);
+                exitValuations.push(valuation / 1_000_000);
             }
 
             // --- 3. Scenario & Risk-Adjusted Calculation ---
             const baseValuationY4 = yearlyResults[3].valuation;
-            const consValuationY4 = baseValuationY4 * 0.8;
-            const optValuationY4 = baseValuationY4 * 1.3;
-            const riskAdjustedValuation = (consValuationY4 * (inputs.scenarioProbs[0]/100)) +
-                                        (baseValuationY4 * (inputs.scenarioProbs[1]/100)) +
-                                        (optValuationY4 * (inputs.scenarioProbs[2]/100));
+            const consValuationY4 = baseValuationY4 * 0.8; // 80% of base
+            const optValuationY4 = baseValuationY4 * 1.3; // 130% of base
+            const riskAdjustedValuation = 
+                (consValuationY4 * (inputs.scenarioProbs[0] / 100)) +
+                (baseValuationY4 * (inputs.scenarioProbs[1] / 100)) +
+                (optValuationY4 * (inputs.scenarioProbs[2] / 100));
 
             // --- 4. Update Dashboard UI ---
-            // Update Key Metric Cards using consistent data
             document.getElementById('exitPotential').textContent = `£${(riskAdjustedValuation / 1_000_000).toFixed(1)}M`;
             document.getElementById('annualRevenue').textContent = `£${(yearlyResults[3].totalRevenue / 1_000_000).toFixed(1)}M`;
             document.getElementById('targetMau').textContent = `${(inputs.mauTargets[3] / 1000).toFixed(0)}K`;
-            document.getElementById('kpi-cac').textContent = `£${yearlyResults[3].cac.toFixed(2)}`;
+            
+            // Calculate KPIs for Year 4
+            const cacY4 = (opex[3]) / (inputs.mauTargets[3] - inputs.mauTargets[2]); // Simplified CAC
+            document.getElementById('kpi-cac').textContent = `£${cacY4.toFixed(2)}`;
+            const arpuY4 = yearlyResults[3].totalRevenue / inputs.mauTargets[3];
+            document.getElementById('kpi-arpu').textContent = `£${arpuY4.toFixed(2)}`;
 
             // Update the KPI Line Chart
-            const kpiData = {
+            // The chart will now show the base-case valuation timeline.
+            // The main "Exit Potential" widget shows the final, risk-adjusted Year 4 number.
+            const chartData = {
                 labels: ['Y1', 'Y2', 'Y3', 'Y4', 'Y5'],
-                exit: exitValuations, // This is the base-case valuation timeline
+                exit: exitValuations,
                 revenue: revenueStreams,
                 mau: mauValues,
                 opex: opexValues
             };
-            updateKpiLineChart(kpiData);
+            updateKpiLineChart(chartData);
         }
 
         // Run calculations on page load
@@ -1091,6 +1104,9 @@
                          calculateProjections();
                     }
                 });
+            } else {
+                // If no password form, calculate directly
+                calculateProjections();
             }
         };
 
