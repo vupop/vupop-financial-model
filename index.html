@@ -301,6 +301,7 @@
             color: var(--white);
         }
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
     <div id="passwordOverlay" class="password-overlay">
@@ -311,6 +312,33 @@
             <button type="submit">Unlock</button>
         </form>
     </div>
+    <div class="walkthrough">
+        <div class="walkthrough-step" id="step1">
+            <h2>1. Vupop's Business Model & Market Context</h2>
+            <p>Vupop is a sports media platform with a unique broadcast licensing model. At 313K MAU, Vupop achieves a £100M valuation—3-4x less than generic social platforms. Our unique sports content and broadcast licensing model commands a premium, as shown in market comps.</p>
+        </div>
+        <div class="walkthrough-step" id="step2" style="display:none;">
+            <h2>2. Key Assumptions & Editable Variables</h2>
+            <p>Adjust the assumptions below to model different scenarios. All calculations and projections update live as you change inputs.</p>
+        </div>
+        <div class="walkthrough-step" id="step3" style="display:none;">
+            <h2>3. Revenue & Cost Breakdown</h2>
+            <p>See how revenue streams and costs evolve over time, and how they drive profitability and growth.</p>
+        </div>
+        <div class="walkthrough-step" id="step4" style="display:none;">
+            <h2>4. KPI & Scenario Analysis</h2>
+            <p>Review key performance indicators and scenario outcomes. Explore how different assumptions impact exit valuation and investor returns.</p>
+        </div>
+        <div class="walkthrough-step" id="step5" style="display:none;">
+            <h2>5. Exit Valuation & Benchmarking</h2>
+            <p>Compare Vupop's exit potential to market comps and see the risk-adjusted expected value based on your scenario probabilities.</p>
+        </div>
+        <div class="walkthrough-nav">
+            <button id="prevStep" onclick="walkthroughStep(-1)" style="display:none;">Back</button>
+            <button id="nextStep" onclick="walkthroughStep(1)">Next</button>
+        </div>
+    </div>
+    <button class="collapse-btn" onclick="toggleVariables()">Show/Hide Assumptions</button>
     <div class="container" id="mainContent" style="display:none;">
         <header class="header fade-in">
             <!-- Logo placeholder -->
@@ -318,8 +346,8 @@
             <h1>Vupop Financial Model</h1>
             <p>Interactive Financial Analysis Dashboard</p>
         </header>
-        <div class="dashboard">
-            <div class="controls-panel fade-in">
+        <div class="dashboard compact-layout">
+            <div class="controls-panel fade-in collapsible" id="variablesPanel">
                 <h2 class="section-title">Key Assumptions</h2>
                 <div class="input-group">
                     <label for="startingMAU">Starting MAU</label>
@@ -415,7 +443,7 @@
                 </div>
                 <button class="button" onclick="calculateProjections()">Update Projections</button>
             </div>
-            <div class="results-panel fade-in">
+            <div class="results-panel fade-in compact-results">
                 <h2 class="section-title">Key Metrics</h2>
                 <div class="metrics-grid">
                     <div class="metric-card">
@@ -457,6 +485,8 @@
                     <div class="metric-value">$0</div>
                     <div class="metric-subtitle">Based on 5x Revenue Multiple</div>
                 </div>
+                <canvas id="growthChart" height="120"></canvas>
+                <canvas id="scenarioChart" height="120"></canvas>
             </div>
         </div>
         <div class="scenario-section">
@@ -797,6 +827,74 @@
             const expectedVal = consVal * (scenarioProbs[0]/100) + baseVal * (scenarioProbs[1]/100) + optVal * (scenarioProbs[2]/100);
             // Optionally display this somewhere in the UI
             // console.log('Risk-adjusted expected value:', expectedVal);
+
+            // Walkthrough logic
+            let walkthroughIndex = 1;
+            function walkthroughStep(dir) {
+                document.getElementById(`step${walkthroughIndex}`).style.display = 'none';
+                walkthroughIndex += dir;
+                if (walkthroughIndex < 1) walkthroughIndex = 1;
+                if (walkthroughIndex > 5) walkthroughIndex = 5;
+                document.getElementById(`step${walkthroughIndex}`).style.display = 'block';
+                document.getElementById('prevStep').style.display = walkthroughIndex > 1 ? '' : 'none';
+                document.getElementById('nextStep').style.display = walkthroughIndex < 5 ? '' : 'none';
+            }
+            walkthroughStep(0);
+            // Collapsible variables panel
+            function toggleVariables() {
+                const panel = document.getElementById('variablesPanel');
+                panel.style.display = panel.style.display === 'none' ? '' : 'none';
+            }
+            // Compact layout CSS
+            const style = document.createElement('style');
+            style.innerHTML = `
+                .compact-layout { grid-template-columns: 320px 1fr; }
+                .controls-panel.collapsible { max-width: 320px; min-width: 220px; padding: 12px 8px; font-size: 0.95em; }
+                .compact-results { padding: 12px 8px; }
+                .metrics-grid, .kpi-grid { gap: 10px; }
+                .metric-card, .kpi-card { padding: 10px 6px; font-size: 0.95em; }
+                .collapse-btn { position: fixed; top: 10px; left: 10px; z-index: 1000; background: var(--yellow); color: var(--black); border: none; border-radius: 6px; padding: 6px 14px; font-weight: 700; cursor: pointer; }
+            `;
+            document.head.appendChild(style);
+            // Chart.js visuals
+            let growthChart, scenarioChart;
+            function updateCharts(results, mauTargets) {
+                // Hockey stick growth (MAU)
+                const ctx1 = document.getElementById('growthChart').getContext('2d');
+                if (growthChart) growthChart.destroy();
+                growthChart = new Chart(ctx1, {
+                    type: 'line',
+                    data: {
+                        labels: ['Year 1','Year 2','Year 3','Year 4','Year 5'],
+                        datasets: [{
+                            label: 'MAU',
+                            data: mauTargets,
+                            borderColor: '#fff700',
+                            backgroundColor: 'rgba(255, 247, 0, 0.2)',
+                            tension: 0.3,
+                            pointRadius: 4,
+                            fill: true
+                        }]
+                    },
+                    options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
+                });
+                // Scenario bar chart
+                const ctx2 = document.getElementById('scenarioChart').getContext('2d');
+                if (scenarioChart) scenarioChart.destroy();
+                scenarioChart = new Chart(ctx2, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Conservative','Base','Optimistic'],
+                        datasets: [{
+                            label: 'Exit Valuation (£)',
+                            data: [results.consVal, results.baseVal, results.optVal],
+                            backgroundColor: ['#ffb300','#fff700','#bada55']
+                        }]
+                    },
+                    options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
+                });
+            }
+            updateCharts(results, mauTargets);
         }
         document.querySelectorAll('input').forEach(input => {
             input.addEventListener('keypress', function(e) {
