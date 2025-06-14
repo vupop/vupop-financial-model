@@ -44,37 +44,57 @@ export function populateAssumptionsPanel(assumptions) {
 
 export function updateKPIs(projections) {
     const kpiGrid = document.querySelector('.kpi-grid');
-    kpiGrid.innerHTML = ''; // Clear existing cards
+    kpiGrid.innerHTML = '';
 
     if (!projections || !projections.yearly || projections.yearly.length === 0) {
         return;
     }
 
-    const latestYear = projections.yearly[projections.yearly.length - 1];
-    const year4 = projections.yearly[projections.yearly.length - 2];
+    // Use Year 4 as the main reference year for all metrics
+    const year4 = projections.yearly[3]; // 0-based index, Year 4 is index 3
 
-    const totalRevenueKPI = `
+    // Helper for formatting
+    const fmtGBP = v => `£${Number(v).toLocaleString('en-GB', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
+    const fmtPct = v => `${Number(v).toFixed(1)}%`;
+
+    // KPI Cards
+    const kpis = [
+        {
+            label: 'Year 4 Valuation',
+            value: fmtGBP(year4.revenue.total * 10),
+        },
+        {
+            label: 'Year 4 MAU',
+            value: `${(year4.mau / 1000).toFixed(0)}k`,
+        },
+        {
+            label: 'Year 4 Total Revenue',
+            value: fmtGBP(year4.revenue.total),
+        },
+        {
+            label: 'Year 4 B2B Revenue',
+            value: fmtGBP(year4.revenue.totalB2B),
+        },
+        {
+            label: 'Year 4 B2C Revenue',
+            value: fmtGBP(year4.revenue.totalB2C),
+        },
+        {
+            label: 'Year 4 EBITDA',
+            value: fmtGBP(year4.profitability.ebitda),
+        },
+        {
+            label: 'Year 4 Gross Margin %',
+            value: year4.revenue.total ? fmtPct((year4.profitability.grossProfit / year4.revenue.total) * 100) : 'N/A',
+        },
+    ];
+
+    kpiGrid.innerHTML = kpis.map(kpi => `
         <div class="kpi-card">
-            <h3>Year 4 Valuation</h3>
-            <p>£${(year4.revenue.total * 10).toLocaleString('en-GB', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</p>
+            <h3>${kpi.label}</h3>
+            <p>${kpi.value}</p>
         </div>
-    `;
-
-    const mauKPI = `
-        <div class="kpi-card">
-            <h3>Year 4 MAU</h3>
-            <p>${(year4.mau / 1000).toFixed(0)}k</p>
-        </div>
-    `;
-
-    const ebitdaKPI = `
-        <div class="kpi-card">
-            <h3>Year 4 EBITDA</h3>
-            <p>£${(year4.profitability.ebitda).toLocaleString('en-GB', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</p>
-        </div>
-    `;
-
-    kpiGrid.innerHTML = totalRevenueKPI + mauKPI + ebitdaKPI;
+    `).join('');
 }
 
 let financialChart = null;
@@ -180,6 +200,144 @@ export function updateFinancialChart(projections) {
     } else {
         financialChart = new Chart(ctx, {
             type: 'line',
+            data: data,
+            options: options
+        });
+    }
+}
+
+export function updateProjectionsTable(projections) {
+    const container = document.getElementById('projections-table-container');
+    if (!projections || !projections.yearly || projections.yearly.length === 0) {
+        container.innerHTML = '<p>No data available.</p>';
+        return;
+    }
+    const fmtGBP = v => `£${Number(v).toLocaleString('en-GB', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
+    const fmtPct = v => `${Number(v).toFixed(1)}%`;
+    const rows = projections.yearly.map((year, i) => `
+        <tr>
+            <td>Year ${year.year}</td>
+            <td>${year.mau.toLocaleString('en-GB')}</td>
+            <td>${fmtGBP(year.revenue.total)}</td>
+            <td>${fmtGBP(year.revenue.totalB2B)}</td>
+            <td>${fmtGBP(year.revenue.totalB2C)}</td>
+            <td>${fmtGBP(year.profitability.ebitda)}</td>
+            <td>${year.revenue.total ? fmtPct((year.profitability.grossProfit / year.revenue.total) * 100) : 'N/A'}</td>
+            <td>${fmtGBP(year.revenue.total * (i === 2 ? 15 : i === 3 ? 10 : i === 4 ? 8 : 0))}</td>
+        </tr>
+    `).join('');
+    container.innerHTML = `
+        <table class="projections-table">
+            <thead>
+                <tr>
+                    <th>Year</th>
+                    <th>MAU</th>
+                    <th>Total Revenue</th>
+                    <th>B2B Revenue</th>
+                    <th>B2C Revenue</th>
+                    <th>EBITDA</th>
+                    <th>Gross Margin %</th>
+                    <th>Exit Valuation</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${rows}
+            </tbody>
+        </table>
+    `;
+}
+
+export function updateNarrativeSection() {
+    const narrative = document.getElementById('narrative-content');
+    narrative.innerHTML = `
+        <p><strong>Vupop is positioned to achieve a £100 million valuation at 313K MAU</strong>, representing exceptional returns for early investors and a compelling exit opportunity. The model projects strong revenue growth, high-margin recurring revenue, and a diversified business model. Key metrics such as EBITDA, gross margin, and B2B/B2C revenue mix are benchmarked against leading market comps, supporting the investment thesis and exit strategy.</p>
+        <ul>
+            <li><strong>Exceptional return potential:</strong> 22x+ return on current £4.5M valuation</li>
+            <li><strong>Conservative user acquisition target:</strong> 313K MAU for £100M exit</li>
+            <li><strong>Multiple strategic acquirers</strong> with clear rationale</li>
+            <li><strong>High recurring revenue and margins</strong> vs. market benchmarks</li>
+        </ul>
+    `;
+}
+
+let benchmarkChart = null;
+
+export function updateBenchmarkChart() {
+    const ctx = document.getElementById('benchmarkChart').getContext('2d');
+    // Hardcoded market comps (from markdown and spreadsheet)
+    const comps = [
+        { name: 'Vupop (Yr 4)', mau: 500000, valuation: 100_000_000 },
+        { name: 'Discord (2024)', mau: 200_000_000, valuation: 11_700_000_000 },
+        { name: 'Reddit (2024)', mau: 430_000_000, valuation: 5_070_000_000 },
+        { name: 'Truth Social (2024)', mau: 5_000_000, valuation: 4_680_000_000 },
+        { name: 'Snapchat (2017)', mau: 190_000_000, valuation: 18_720_000_000 },
+        { name: 'Pinterest (2019)', mau: 400_000_000, valuation: 7_800_000_000 },
+    ];
+    const data = {
+        labels: comps.map(c => c.name),
+        datasets: [
+            {
+                label: 'Valuation (£)',
+                data: comps.map(c => c.valuation),
+                backgroundColor: comps.map(c => c.name.includes('Vupop') ? '#FFD700' : '#888'),
+            },
+            {
+                label: 'MAU (millions)',
+                data: comps.map(c => c.mau / 1_000_000),
+                backgroundColor: 'rgba(52, 152, 219, 0.5)',
+                yAxisID: 'y1',
+            }
+        ]
+    };
+    const options = {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+            y: {
+                type: 'linear',
+                position: 'left',
+                beginAtZero: true,
+                title: { display: true, text: 'Valuation (£)' },
+                ticks: {
+                    callback: v => '£' + (v / 1_000_000) + 'M',
+                    color: '#a0a0a0',
+                },
+                grid: { color: '#333' },
+            },
+            y1: {
+                type: 'linear',
+                position: 'right',
+                beginAtZero: true,
+                title: { display: true, text: 'MAU (millions)' },
+                ticks: {
+                    callback: v => v + 'M',
+                    color: '#03a9f4',
+                },
+                grid: { drawOnChartArea: false },
+            }
+        },
+        plugins: {
+            legend: { position: 'top', labels: { color: '#e0e0e0' } },
+            tooltip: {
+                callbacks: {
+                    label: function(context) {
+                        if (context.dataset.label === 'Valuation (£)') {
+                            return context.dataset.label + ': £' + context.parsed.y.toLocaleString('en-GB');
+                        } else {
+                            return context.dataset.label + ': ' + context.parsed.y + 'M';
+                        }
+                    }
+                }
+            }
+        }
+    };
+    if (benchmarkChart) {
+        benchmarkChart.data = data;
+        benchmarkChart.options = options;
+        benchmarkChart.update();
+    } else {
+        benchmarkChart = new Chart(ctx, {
+            type: 'bar',
             data: data,
             options: options
         });

@@ -1,38 +1,12 @@
 // Vupop Financial Model Main Script 
 import { assumptions, state, parseFinancialData, fixedInputs } from './state.js';
-import { populateAssumptionsPanel, updateKPIs, updateFinancialChart } from './ui.js';
+import { populateAssumptionsPanel, updateKPIs, updateFinancialChart, updateProjectionsTable, updateNarrativeSection, updateBenchmarkChart } from './ui.js';
 import { calculateProjections } from './calculations.js';
+import { initAuth } from './auth.js';
 
 document.addEventListener('DOMContentLoaded', () => {
-    const correctPassword = 'vupop'; // WARNING: This is not secure for production use.
-    
-    const passwordOverlay = document.getElementById('password-overlay');
-    const mainContent = document.getElementById('main-content');
-    const passwordInput = document.getElementById('password-input');
-    const passwordSubmit = document.getElementById('password-submit');
-    const errorMessage = document.getElementById('error-message');
-
-    function checkPassword() {
-        if (passwordInput.value === correctPassword) {
-            passwordOverlay.style.display = 'none';
-            mainContent.style.display = 'block';
-        } else {
-            errorMessage.textContent = 'Incorrect password. Please try again.';
-            passwordInput.value = '';
-            passwordInput.focus();
-        }
-    }
-
-    passwordSubmit.addEventListener('click', checkPassword);
-
-    passwordInput.addEventListener('keypress', (event) => {
-        if (event.key === 'Enter') {
-            checkPassword();
-        }
-    });
-
-    // Set focus to the password input field when the page loads
-    passwordInput.focus();
+    // Initialize authentication
+    initAuth();
     
     // Modal elements
     const assumptionsModal = document.getElementById('assumptions-modal');
@@ -69,7 +43,16 @@ document.addEventListener('DOMContentLoaded', () => {
         })
         .catch(error => {
             console.error('Error loading or parsing financial data:', error);
-            // Optionally, show an error message to the user on the dashboard
+            // Show error message to the user
+            const mainContent = document.getElementById('main-content');
+            if (mainContent) {
+                mainContent.innerHTML = `
+                    <div class="error-container">
+                        <h2>Error Loading Data</h2>
+                        <p>There was a problem loading the financial data. Please try refreshing the page.</p>
+                    </div>
+                `;
+            }
         });
 });
 
@@ -84,6 +67,7 @@ function updateDashboard() {
     console.log('Dashboard updated with new projections:', state.projections);
     updateKPIs(state.projections);
     updateFinancialChart(state.projections);
-
-    // In the future, this function will also update charts and KPIs
+    updateProjectionsTable(state.projections);
+    updateNarrativeSection();
+    updateBenchmarkChart();
 } 
