@@ -550,8 +550,18 @@
         }
         /* Assumptions Panel (pop-out) */
         .assumptions-panel {
-            padding-top: 5vh;
+            display: none; /* Hidden by default */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.85);
+            z-index: 1000;
+            justify-content: center;
             align-items: flex-start;
+            padding-top: 5vh;
+            overflow-y: auto;
         }
         .assumptions-content {
             padding: 20px;
@@ -904,12 +914,12 @@
         updateKpiLineChart(kpiData);
 
         document.getElementById('toggleAssumptionsBtn').addEventListener('click', () => {
-            document.getElementById('assumptionsPanel').style.display = 'block';
+            document.getElementById('assumptionsPanel').style.display = 'flex'; // Use flex to show
         });
 
         document.getElementById('updateDashboardBtn').addEventListener('click', () => {
-            calculateProjections();
-            document.getElementById('assumptionsPanel').style.display = 'none';
+            calculateProjections(); // Recalculate everything
+            document.getElementById('assumptionsPanel').style.display = 'none'; // Hide panel
         });
 
         function calculateProjections() {
