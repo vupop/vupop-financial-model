@@ -2,12 +2,12 @@
 
 /* Base styles */
 :root {
-    --primary-color: #2c3e50;
-    --secondary-color: #3498db;
+    --primary-color: #FFD700; /* Vupop Yellow */
+    --secondary-color: #121212; /* Dark background */
     --accent-color: #e74c3c;
-    --text-color: #2c3e50;
-    --background-color: #f5f6fa;
-    --card-background: #ffffff;
+    --text-color: #fff;
+    --background-color: #121212;
+    --card-background: #1e1e1e;
     --error-color: #e74c3c;
     --success-color: #2ecc71;
 }
@@ -65,18 +65,19 @@ body {
 }
 
 .password-box button {
-    background-color: var(--secondary-color);
-    color: white;
+    background-color: var(--primary-color);
+    color: #000;
     border: none;
     padding: 0.75rem 2rem;
     border-radius: 4px;
     font-size: 1rem;
     cursor: pointer;
     transition: background-color 0.2s;
+    font-weight: bold;
 }
 
 .password-box button:hover {
-    background-color: #2980b9;
+    background-color: #ffc700;
 }
 
 .error-message {
@@ -130,17 +131,18 @@ body {
 }
 
 .header-btn {
-    background-color: var(--secondary-color);
-    color: white;
+    background-color: var(--primary-color);
+    color: #000;
     border: none;
     padding: 0.5rem 1rem;
     border-radius: 4px;
     cursor: pointer;
     transition: background-color 0.2s;
+    font-weight: bold;
 }
 
 .header-btn:hover {
-    background-color: #2980b9;
+    background-color: #ffc700;
 }
 
 /* Modal Styles */
@@ -197,7 +199,8 @@ body {
 .kpi-card {
     background: var(--card-background);
     border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    border: 1px solid #333;
     padding: 1rem 1.5rem;
     text-align: center;
     display: flex;
@@ -210,15 +213,15 @@ body {
 .kpi-card h3 {
     margin: 0 0 0.5rem 0;
     font-size: 1.1rem;
-    color: var(--primary-color);
-    font-weight: 600;
+    color: #a0a0a0;
+    font-weight: 500;
 }
 
 .kpi-card p {
     margin: 0;
-    font-size: 1.5rem;
+    font-size: 2rem;
     font-weight: bold;
-    color: var(--secondary-color);
+    color: var(--primary-color);
 }
 
 .charts-area {
@@ -226,6 +229,7 @@ body {
     flex-wrap: wrap;
     gap: 1.5rem;
     margin-bottom: 1.5rem;
+    background: none;
 }
 
 .chart-container {
@@ -286,16 +290,17 @@ body {
 .user-profile {
     display: flex;
     align-items: center;
-    font-weight: 500;
-    background-color: #FFD700; /* Vupop Yellow */
+    font-weight: bold;
+    background-color: var(--primary-color);
     margin-left: 12px;
+    color: #000;
 }
 
 .main-area {
     flex-grow: 1;
     padding: 30px;
     overflow-y: auto;
-    background-color: #121212;
+    background-color: var(--background-color);
 }
 
 /* Assumption Controls */
@@ -308,7 +313,7 @@ body {
     font-size: 14px;
     font-weight: 500;
     margin-bottom: 5px;
-    color: #e0e0e0;
+    color: #a0a0a0;
     cursor: help;
     border-bottom: 1px dotted #a0a0a0;
     display: inline-block;
@@ -328,5 +333,17 @@ body {
 
 .assumption-control input:focus {
     outline: none;
-    border-color: #FFD700; /* Vupop Yellow */
+    border-color: var(--primary-color);
+}
+
+.projections-table th, .projections-table td {
+    color: var(--text-color);
+    background: var(--card-background);
+    border: 1px solid #333;
+    padding: 0.5rem 1rem;
+}
+
+.projections-table th {
+    color: var(--primary-color);
+    background: #222;
 } 
