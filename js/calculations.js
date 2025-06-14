@@ -18,12 +18,14 @@ export function calculateProjections(assumptions) {
         // A more complex model would calculate this month-by-month.
         const averageMAU = (currentMAU + targetMAU) / 2;
 
+        // Correctly handle percentage-based assumptions by dividing by 100
+        const adoptionRate = assumptions.premiumAdoptionRate / 100;
+        const commissionRate = assumptions.affiliateCommissionRate / 100;
+
         // B2C Revenue
-        const premiumSubsRevenue = averageMAU * assumptions.premiumAdoptionRate * assumptions.premiumSubscriptionPrice * 12;
+        const premiumSubsRevenue = averageMAU * adoptionRate * assumptions.premiumSubscriptionPrice * 12;
         const adRevenue = year >= 3 ? averageMAU * assumptions.adRevenuePerUser * 12 : 0;
-        
-        // A placeholder for affiliate revenue logic
-        const affiliateRevenue = premiumSubsRevenue * assumptions.affiliateCommissionRate;
+        const affiliateRevenue = premiumSubsRevenue * commissionRate;
 
         const totalB2CRevenue = premiumSubsRevenue + adRevenue + affiliateRevenue;
 

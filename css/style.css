@@ -86,18 +86,13 @@ body {
 
 /* Dashboard Layout */
 .dashboard-container {
-    display: grid;
-    grid-template-columns: 280px 1fr;
-    grid-template-rows: 60px 1fr;
-    grid-template-areas:
-        "header header"
-        "sidebar main";
+    display: flex;
+    flex-direction: column;
     height: 100vh;
     width: 100%;
 }
 
 .dashboard-header {
-    grid-area: header;
     background-color: #1e1e1e;
     border-bottom: 1px solid #333;
     display: flex;
@@ -110,6 +105,8 @@ body {
     font-size: 22px;
     margin: 0;
     color: #FFD700; /* Vupop Yellow */
+    background-color: #FFD700; /* Vupop Yellow */
+    margin-left: 12px;
 }
 
 .header-logo {
@@ -148,23 +145,8 @@ body {
     margin-left: 12px;
 }
 
-.sidebar {
-    grid-area: sidebar;
-    background-color: #1e1e1e;
-    padding: 20px;
-    border-right: 1px solid #333;
-}
-
-.sidebar h2 {
-    font-size: 18px;
-    margin-top: 0;
-    margin-bottom: 20px;
-    color: #a0a0a0;
-}
-
 .main-area {
-    grid-area: main;
-    grid-column: 1 / 3; /* Make main area span both columns */
+    flex-grow: 1;
     padding: 30px;
     overflow-y: auto;
     background-color: #121212;

@@ -42,19 +42,12 @@ export const state = {
 function parseValue(value) {
     if (typeof value !== 'string') return value;
 
-    const isPercentage = value.includes('%');
+    // Just clean the string and convert to a number.
+    // Percentage conversion will be handled in the calculation logic.
     const cleaned = value.replace(/[£,%]/g, '').trim();
-    let number = parseFloat(cleaned);
+    const number = parseFloat(cleaned);
 
-    if (isNaN(number)) {
-        return value; // Return original string if not a number
-    }
-
-    if (isPercentage) {
-        number /= 100;
-    }
-
-    return number;
+    return isNaN(number) ? value : number;
 }
 
 export function parseFinancialData(htmlText) {
