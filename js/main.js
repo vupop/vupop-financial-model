@@ -34,6 +34,26 @@ document.addEventListener('DOMContentLoaded', () => {
     // Set focus to the password input field when the page loads
     passwordInput.focus();
     
+    // Modal elements
+    const assumptionsModal = document.getElementById('assumptions-modal');
+    const editAssumptionsBtn = document.getElementById('edit-assumptions-btn');
+    const closeModalBtn = document.getElementById('close-modal-btn');
+    const updateDashboardBtn = document.getElementById('update-dashboard-btn');
+
+    // Modal event listeners
+    editAssumptionsBtn.addEventListener('click', () => {
+        assumptionsModal.classList.remove('hidden');
+    });
+
+    closeModalBtn.addEventListener('click', () => {
+        assumptionsModal.classList.add('hidden');
+    });
+
+    updateDashboardBtn.addEventListener('click', () => {
+        updateDashboard();
+        assumptionsModal.classList.add('hidden');
+    });
+
     // Fetch and parse the financial model data
     fetch('vupop_financial_model_spreadsheet.html')
         .then(response => {
@@ -55,7 +75,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function initializeApp() {
     console.log('App initialized with assumptions:', assumptions);
-    populateAssumptionsPanel(assumptions, updateDashboard);
+    populateAssumptionsPanel(assumptions);
     updateDashboard(); // Initial calculation
 }
 

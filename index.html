@@ -22,21 +22,33 @@
         <div class="dashboard-container">
             <header class="dashboard-header">
                 <div class="header-left">
-                    <h1>Vupop Financial Model</h1>
+                    <img src="logo.png" alt="Vupop Logo" class="header-logo">
+                    <h1>Financial Model</h1>
                 </div>
                 <div class="header-right">
+                    <button id="edit-assumptions-btn" class="header-btn">Edit Assumptions</button>
                     <div class="user-profile">
                         <span>Investor</span>
                         <div class="avatar"></div>
                     </div>
                 </div>
             </header>
-            <aside class="sidebar">
-                <h2>Assumptions</h2>
-                <div id="assumptions-panel">
-                    <!-- Assumption controls will be dynamically inserted here -->
+
+            <div id="assumptions-modal" class="modal-overlay hidden">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2>Edit Assumptions</h2>
+                        <button id="close-modal-btn" class="close-btn">&times;</button>
+                    </div>
+                    <div id="assumptions-panel" class="modal-body">
+                        <!-- Assumption controls will be dynamically inserted here -->
+                    </div>
+                    <div class="modal-footer">
+                        <button id="update-dashboard-btn" class="header-btn">Update Dashboard</button>
+                    </div>
                 </div>
-            </aside>
+            </div>
+
             <main class="main-area">
                 <div class="kpi-grid">
                     <!-- KPI cards will be dynamically inserted here -->

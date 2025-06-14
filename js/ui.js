@@ -1,35 +1,44 @@
-export function populateAssumptionsPanel(assumptions, updateCallback) {
+export function populateAssumptionsPanel(assumptions) {
     const panel = document.getElementById('assumptions-panel');
     panel.innerHTML = ''; // Clear existing content
 
     for (const key in assumptions) {
-        const assumption = assumptions[key];
-        const labelText = key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
+        if (Object.hasOwnProperty.call(assumptions, key)) {
+            const assumption = assumptions[key];
+            const labelText = key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
 
-        const controlDiv = document.createElement('div');
-        controlDiv.className = 'assumption-control';
+            const controlDiv = document.createElement('div');
+            controlDiv.className = 'assumption-control';
 
-        const label = document.createElement('label');
-        label.htmlFor = key;
-        label.textContent = labelText;
+            const label = document.createElement('label');
+            label.htmlFor = key;
+            label.textContent = labelText;
 
-        const input = document.createElement('input');
-        input.type = 'number';
-        input.id = key;
-        input.value = assumption;
-        input.step = (assumption < 1 && assumption > 0) ? '0.01' : '1'; // Adjust step for percentages
+            const input = document.createElement('input');
+            input.type = 'number';
+            input.id = key;
+            input.value = assumption;
 
-        input.addEventListener('change', (event) => {
-            const newValue = parseFloat(event.target.value);
-            if (!isNaN(newValue)) {
-                assumptions[key] = newValue;
-                updateCallback();
+            // Determine step based on value type (percentage or currency)
+            if (key.toLowerCase().includes('rate')) {
+                input.step = '0.01';
+            } else if (assumption < 10) {
+                input.step = '0.01';
+            } else {
+                input.step = '1';
             }
-        });
 
-        controlDiv.appendChild(label);
-        controlDiv.appendChild(input);
-        panel.appendChild(controlDiv);
+            input.addEventListener('change', (event) => {
+                const newValue = parseFloat(event.target.value);
+                if (!isNaN(newValue)) {
+                    assumptions[key] = newValue;
+                }
+            });
+
+            controlDiv.appendChild(label);
+            controlDiv.appendChild(input);
+            panel.appendChild(controlDiv);
+        }
     }
 }
 

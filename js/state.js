@@ -41,9 +41,20 @@ export const state = {
 
 function parseValue(value) {
     if (typeof value !== 'string') return value;
+
+    const isPercentage = value.includes('%');
     const cleaned = value.replace(/[£,%]/g, '').trim();
-    const number = parseFloat(cleaned);
-    return isNaN(number) ? value : number;
+    let number = parseFloat(cleaned);
+
+    if (isNaN(number)) {
+        return value; // Return original string if not a number
+    }
+
+    if (isPercentage) {
+        number /= 100;
+    }
+
+    return number;
 }
 
 export function parseFinancialData(htmlText) {
