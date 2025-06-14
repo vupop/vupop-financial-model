@@ -1,5 +1,5 @@
 // Vupop Financial Model Main Script 
-import { assumptions, state, parseFinancialData } from './state.js';
+import { assumptions, state, parseFinancialData, fixedInputs } from './state.js';
 import { populateAssumptionsPanel, updateKPIs, updateFinancialChart } from './ui.js';
 import { calculateProjections } from './calculations.js';
 
@@ -80,7 +80,7 @@ function initializeApp() {
 }
 
 function updateDashboard() {
-    state.projections = calculateProjections(assumptions);
+    state.projections = calculateProjections(assumptions, fixedInputs);
     console.log('Dashboard updated with new projections:', state.projections);
     updateKPIs(state.projections);
     updateFinancialChart(state.projections);

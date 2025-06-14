@@ -18,19 +18,27 @@ export const assumptions = {
     broadcastTierPrice: { value: 0, note: '' },
     broadcastPlusTierPrice: { value: 0, note: '' },
     usageFeePerSecond: { value: 0, note: '' },
-    // B2B Customers (Year 1)
-    initialSocialTierCustomers: { value: 0, note: '' },
-    initialBroadcastTierCustomers: { value: 0, note: '' },
-    initialBroadcastPlusTierCustomers: { value: 0, note: '' },
-    initialSecondsLicensed: { value: 0, note: '' },
-    // Costs (COGS)
-    contentCreationProcessing: { value: 0, note: '' },
-    platformInfrastructure: { value: 0, note: '' },
-    // Costs (OpEx)
-    salariesBenefits: { value: 0, note: '' },
-    marketingGrowth: { value: 0, note: '' },
-    operationsLegal: { value: 0, note: '' },
-    technologyInfrastructure: { value: 0, note: '' },
+};
+
+export const fixedInputs = {
+    b2bCustomers: {
+        socialTier: [],
+        broadcastTier: [],
+        broadcastPlusTier: [],
+    },
+    secondsLicensed: [],
+    costs: {
+        cogs: {
+            contentCreation: [],
+            platformInfrastructure: [],
+        },
+        opex: {
+            salaries: [],
+            marketing: [],
+            operations: [],
+            technology: [],
+        }
+    }
 };
 
 export const state = {
@@ -70,33 +78,72 @@ export function parseFinancialData(htmlText) {
         'Broadcast Tier Price': 'broadcastTierPrice',
         'Broadcast+ Tier Price': 'broadcastPlusTierPrice',
         'Usage Fee per Second': 'usageFeePerSecond',
-        'Social Tier Customers': 'initialSocialTierCustomers',
-        'Broadcast Tier Customers': 'initialBroadcastTierCustomers',
-        'Broadcast+ Tier Customers': 'initialBroadcastPlusTierCustomers',
-        'Seconds Licensed (000s)': 'initialSecondsLicensed',
-        'Content Creation & Processing': 'contentCreationProcessing',
-        'Platform Infrastructure': 'platformInfrastructure',
-        'Salaries & Benefits': 'salariesBenefits',
-        'Marketing & Growth': 'marketingGrowth',
-        'Operations & Legal': 'operationsLegal',
-        'Technology & Infrastructure': 'technologyInfrastructure',
+    };
+
+    let mode = 'none'; // Will change to 'assumptions', 'b2b', 'cogs', 'opex'
+
+    const yearlyDataMap = {
+        'Social Tier Customers': fixedInputs.b2bCustomers.socialTier,
+        'Broadcast Tier Customers': fixedInputs.b2bCustomers.broadcastTier,
+        'Broadcast+ Tier Customers': fixedInputs.b2bCustomers.broadcastPlusTier,
+        'Seconds Licensed (000s)': fixedInputs.secondsLicensed,
+        'Content Creation & Processing': fixedInputs.costs.cogs.contentCreation,
+        'Platform Infrastructure': fixedInputs.costs.cogs.platformInfrastructure,
+        'Salaries & Benefits': fixedInputs.costs.opex.salaries,
+        'Marketing & Growth': fixedInputs.costs.opex.marketing,
+        'Operations & Legal': fixedInputs.costs.opex.operations,
+        'Technology & Infrastructure': fixedInputs.costs.opex.technology,
     };
 
     rows.forEach(row => {
         const cells = row.querySelectorAll('td');
-        if (cells.length > 1) {
-            const key = cells[0].textContent.trim();
+        if (cells.length === 0) return;
+
+        const firstCellText = cells[0].textContent.trim();
+
+        // Update parsing mode based on section headers
+        if (firstCellText.includes('1. KEY ASSUMPTIONS & INPUTS')) {
+            mode = 'assumptions';
+            return;
+        }
+        if (firstCellText.includes('2. REVENUE PROJECTIONS')) {
+            mode = 'b2b'; // Start of B2B data
+            return; 
+        }
+        if (firstCellText.includes('3. COST STRUCTURE')) {
+            mode = 'costs'; // Start of Cost data
+            return;
+        }
+        if (firstCellText.includes('4. PROFIT & LOSS SUMMARY')) {
+            mode = 'none'; // End of relevant data
+            return;
+        }
+
+        if (mode === 'assumptions') {
+            const key = firstCellText;
             const mappedKey = assumptionMap[key];
-            if (mappedKey) {
-                const rawValue = cells[1].textContent;
-                const note = cells[3] ? cells[3].textContent.trim() : '';
-                assumptions[mappedKey] = {
-                    value: parseValue(rawValue),
-                    note: note,
-                };
+            
+            if (mappedKey && cells.length > 3) { 
+                const rawValue = cells[1].textContent.trim();
+                const note = cells[3].textContent.trim();
+                
+                if (rawValue) {
+                     assumptions[mappedKey] = {
+                        value: parseValue(rawValue),
+                        note: note || '',
+                    };
+                }
+            }
+        } else if (mode === 'b2b' || mode === 'costs') {
+            const targetArray = yearlyDataMap[firstCellText];
+            if (targetArray && cells.length > 5) {
+                for (let i = 1; i <= 5; i++) {
+                    targetArray.push(parseValue(cells[i].textContent));
+                }
             }
         }
     });
 
     console.log('Parsed Assumptions:', assumptions);
+    console.log('Parsed Fixed Inputs:', fixedInputs);
 } 

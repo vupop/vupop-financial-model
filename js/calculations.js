@@ -1,4 +1,4 @@
-export function calculateProjections(assumptions) {
+export function calculateProjections(assumptions, fixedInputs) {
     const yearlyProjections = [];
     const mauTargets = [
         assumptions.year1TargetMAU.value,
@@ -30,10 +30,10 @@ export function calculateProjections(assumptions) {
         const totalB2CRevenue = premiumSubsRevenue + adRevenue + affiliateRevenue;
 
         // B2B Revenue
-        const socialTierCustomers = assumptions.initialSocialTierCustomers.value * Math.pow(2, i);
-        const broadcastTierCustomers = assumptions.initialBroadcastTierCustomers.value * Math.pow(2, i);
-        const broadcastPlusTierCustomers = assumptions.initialBroadcastPlusTierCustomers.value * Math.pow(2, i);
-        const secondsLicensed = assumptions.initialSecondsLicensed.value * Math.pow(4, i); // Faster growth for usage
+        const socialTierCustomers = fixedInputs.b2bCustomers.socialTier[i] || 0;
+        const broadcastTierCustomers = fixedInputs.b2bCustomers.broadcastTier[i] || 0;
+        const broadcastPlusTierCustomers = fixedInputs.b2bCustomers.broadcastPlusTier[i] || 0;
+        const secondsLicensed = fixedInputs.secondsLicensed[i] || 0;
 
         const socialTierRevenue = socialTierCustomers * assumptions.socialTierPrice.value * 12;
         const broadcastTierRevenue = broadcastTierCustomers * assumptions.broadcastTierPrice.value * 12;
@@ -45,13 +45,15 @@ export function calculateProjections(assumptions) {
         const totalRevenue = totalB2CRevenue + totalB2BRevenue;
 
         // Costs & Profitability
-        // Simplified cost model: costs grow as a % of the initial revenue ratio
-        const initialTotalRevenue = 364640; // From spreadsheet Year 1
-        const cogsRatio = (assumptions.contentCreationProcessing.value + assumptions.platformInfrastructure.value) / initialTotalRevenue;
-        const opExRatio = (assumptions.salariesBenefits.value + assumptions.marketingGrowth.value + assumptions.operationsLegal.value + assumptions.technologyInfrastructure.value) / initialTotalRevenue;
+        const cogsContent = fixedInputs.costs.cogs.contentCreation[i] || 0;
+        const cogsInfra = fixedInputs.costs.cogs.platformInfrastructure[i] || 0;
+        const opExSalaries = fixedInputs.costs.opex.salaries[i] || 0;
+        const opExMarketing = fixedInputs.costs.opex.marketing[i] || 0;
+        const opExOps = fixedInputs.costs.opex.operations[i] || 0;
+        const opExTech = fixedInputs.costs.opex.technology[i] || 0;
 
-        const totalCOGS = totalRevenue * cogsRatio;
-        const totalOpEx = totalRevenue * opExRatio;
+        const totalCOGS = cogsContent + cogsInfra;
+        const totalOpEx = opExSalaries + opExMarketing + opExOps + opExTech;
         const grossProfit = totalRevenue - totalCOGS;
         const ebitda = grossProfit - totalOpEx;
 
