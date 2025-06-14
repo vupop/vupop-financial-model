@@ -563,11 +563,40 @@
         }
         .assumptions-content {
             background: var(--gray);
-            max-width: 800px;
+            max-width: 900px;
             margin: auto;
             padding: 30px;
             border-radius: 16px;
             border: 2px solid var(--yellow);
+        }
+        #assumptionsInputs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px 25px;
+        }
+        .input-group label {
+            font-size: 0.9em;
+            font-weight: 600;
+        }
+        .input-group input {
+            font-size: 0.95em;
+            padding: 10px;
+        }
+        .tooltip-text {
+            width: 220px;
+            text-align: left;
+            font-size: 0.85em;
+        }
+
+        /* Updated Dashboard Layout */
+        .chart-card {
+            grid-column: span 2 !important;
+        }
+        .table-card {
+            grid-column: span 2;
+        }
+        .card-grid {
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
         }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -619,8 +648,11 @@
                     <!-- ... scenario table structure ... -->
                 </table>
             </div>
-            <div class="card table-card" style="grid-column: span 3;">
+            <div class="card table-card" style="grid-column: span 4;">
                 <h3 class="section-title">Market Comparables (Media/Social Media)</h3>
+                <p style="margin-bottom: 15px; opacity: 0.9; font-size: 0.95em;">
+                    This table benchmarks Vupop against recent media and social media transactions. It highlights that niche platforms with unique content (like Vupop's sports focus) often command premium valuations per user, justifying our target valuation with a smaller, more engaged user base compared to generic social platforms.
+                </p>
                 <table class="financial-table">
                     <thead><tr><th>Company</th><th>Year</th><th>MAU (M)</th><th>Valuation (£M)</th><th>Value per MAU (£)</th></tr></thead>
                     <tbody>
@@ -662,23 +694,28 @@
         <div class="assumptions-content">
             <h2 class="section-title">Adjust Key Assumptions</h2>
             <div id="assumptionsInputs" class="controls-panel">
-                <!-- User Growth -->
-                <div class="input-group"><label for="startingMAU">Starting MAU</label><input type="number" id="startingMAU" value="1000"></div>
-                <div class="input-group"><label for="mau1">Year 1 Target MAU</label><input type="number" id="mau1" value="50000"></div>
-                <div class="input-group"><label for="mau2">Year 2 Target MAU</label><input type="number" id="mau2" value="150000"></div>
-                <div class="input-group"><label for="mau3">Year 3 Target MAU</label><input type="number" id="mau3" value="313000"></div>
-                <div class="input-group"><label for="mau4">Year 4 Target MAU</label><input type="number" id="mau4" value="500000"></div>
-                <div class="input-group"><label for="mau5">Year 5 Target MAU</label><input type="number" id="mau5" value="750000"></div>
-                <!-- B2C Pricing -->
-                <div class="input-group"><label for="premiumPrice">Premium Subscription Price (£)</label><input type="number" id="premiumPrice" value="0.99"></div>
-                <div class="input-group"><label for="adoptionRate">Premium Adoption Rate (%)</label><input type="number" id="adoptionRate" value="10"></div>
-                <div class="input-group"><label for="adRevenue">Ad Revenue per User (£)</label><input type="number" id="adRevenue" value="0.45"></div>
-                <div class="input-group"><label for="affiliateRate">Affiliate Commission Rate (%)</label><input type="number" id="affiliateRate" value="5.00"></div>
-                <!-- B2B Pricing -->
-                <div class="input-group"><label for="socialTierPrice">Social Tier Price (£)</label><input type="number" id="socialTierPrice" value="999"></div>
-                <div class="input-group"><label for="broadcastTierPrice">Broadcast Tier Price (£)</label><input type="number" id="broadcastTierPrice" value="3499"></div>
-                <div class="input-group"><label for="broadcastPlusTierPrice">Broadcast+ Tier Price (£)</label><input type="number" id="broadcastPlusTierPrice" value="4997"></div>
-                <div class="input-group"><label for="usageFee">Usage Fee per Second (£)</label><input type="number" id="usageFee" value="12"></div>
+                <!-- Column 1 -->
+                <div>
+                    <h4 class="section-title">User Growth</h4>
+                    <div class="input-group"><label for="startingMAU">Starting MAU</label><input type="number" id="startingMAU" value="1000" data-tooltip="The number of Monthly Active Users (MAU) at the beginning of Year 1."></div>
+                    <div class="input-group"><label for="mau1">Year 1 Target MAU</label><input type="number" id="mau1" value="50000" data-tooltip="Projected MAU at the end of Year 1."></div>
+                    <div class="input-group"><label for="mau2">Year 2 Target MAU</label><input type="number" id="mau2" value="150000" data-tooltip="Projected MAU at the end of Year 2."></div>
+                    <div class="input-group"><label for="mau3">Year 3 Target MAU</label><input type="number" id="mau3" value="313000" data-tooltip="The key exit target MAU for a £100M valuation."></div>
+                    <div class="input-group"><label for="mau4">Year 4 Target MAU</label><input type="number" id="mau4" value="500000" data-tooltip="Revenue and scale target for Year 4."></div>
+                    <div class="input-group"><label for="mau5">Year 5 Target MAU</label><input type="number" id="mau5" value="750000" data-tooltip="Projected MAU showing extended growth potential."></div>
+                </div>
+                <!-- Column 2 -->
+                <div>
+                    <h4 class="section-title">B2C & B2B Pricing</h4>
+                    <div class="input-group"><label for="premiumPrice">Premium Subscription Price (£)</label><input type="number" id="premiumPrice" value="0.99" data-tooltip="Monthly price for the B2C premium subscription."></div>
+                    <div class="input-group"><label for="adoptionRate">Premium Adoption Rate (%)</label><input type="number" id="adoptionRate" value="10" data-tooltip="The percentage of MAU expected to subscribe to premium."></div>
+                    <div class="input-group"><label for="adRevenue">Ad Revenue per User (£)</label><input type="number" id="adRevenue" value="0.45" data-tooltip="Monthly ad revenue generated per active user (starts from Year 3)."></div>
+                    <div class="input-group"><label for="affiliateRate">Affiliate Commission Rate (%)</label><input type="number" id="affiliateRate" value="5.00" data-tooltip="Percentage of revenue shared from affiliate links and partnerships."></div>
+                    <div class="input-group"><label for="socialTierPrice">Social Tier Price (£)</label><input type="number" id="socialTierPrice" value="999" data-tooltip="Monthly subscription price for B2B social media clients."></div>
+                    <div class="input-group"><label for="broadcastTierPrice">Broadcast Tier Price (£)</label><input type="number" id="broadcastTierPrice" value="3499" data-tooltip="Monthly subscription price for B2B broadcast clients."></div>
+                    <div class="input-group"><label for="broadcastPlusTierPrice">Broadcast+ Tier Price (£)</label><input type="number" id="broadcastPlusTierPrice" value="4997" data-tooltip="Monthly subscription price for premium B2B broadcast clients."></div>
+                    <div class="input-group"><label for="usageFee">Usage Fee per Second (£)</label><input type="number" id="usageFee" value="12" data-tooltip="Fee charged per second for specific data export/usage features."></div>
+                </div>
             </div>
             <button id="updateDashboardBtn" class="button">Update Dashboard & Close</button>
         </div>
