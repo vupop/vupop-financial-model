@@ -226,7 +226,8 @@ export function parseFinancialData(htmlText) {
                 const note = cells[3].textContent.trim();
                 
                 if (rawValue) {
-                     assumptions[mappedKey] = {
+                    assumptions[mappedKey] = {
+                        ...assumptions[mappedKey],
                         value: parseValue(rawValue),
                         note: note || '',
                     };

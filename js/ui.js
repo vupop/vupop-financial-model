@@ -65,54 +65,27 @@ export function populateAssumptionsPanel(assumptions) {
                 controlDiv.appendChild(tooltip);
             }
 
-            // Create slider container
-            const sliderContainer = document.createElement('div');
-            sliderContainer.className = 'slider-container';
-
-            // Create slider
-            const slider = document.createElement('input');
-            slider.type = 'range';
-            slider.id = `${key}-slider`;
-            slider.min = assumption.min;
-            slider.max = assumption.max;
-            slider.value = assumption.value;
-            slider.step = (assumption.max - assumption.min) / 100;
-
-            // Create number input
+            // Create number input only (no slider)
             const numberInput = document.createElement('input');
             numberInput.type = 'number';
             numberInput.id = key;
             numberInput.value = assumption.value;
-            numberInput.min = assumption.min;
-            numberInput.max = assumption.max;
-            numberInput.step = (assumption.max - assumption.min) / 100;
+            if (assumption.min !== undefined) numberInput.min = assumption.min;
+            if (assumption.max !== undefined) numberInput.max = assumption.max;
+            numberInput.placeholder = (assumption.min !== undefined && assumption.max !== undefined) ? `${assumption.min} - ${assumption.max}` : '';
+            numberInput.step = (assumption.max !== undefined && assumption.min !== undefined) ? (assumption.max - assumption.min) / 100 : 1;
 
-            // Add event listeners for real-time updates
-            const updateValue = (newValue) => {
-                if (!isNaN(newValue) && newValue >= assumption.min && newValue <= assumption.max) {
-                    assumption.value = parseFloat(newValue);
-                    slider.value = newValue;
+            // Add event listener for real-time updates
+            numberInput.addEventListener('change', (e) => {
+                const newValue = parseFloat(e.target.value);
+                if (!isNaN(newValue) && (assumption.min === undefined || newValue >= assumption.min) && (assumption.max === undefined || newValue <= assumption.max)) {
+                    assumption.value = newValue;
                     numberInput.value = newValue;
-                    updateDashboard(); // Real-time update
+                    updateDashboard();
                 }
-            };
-
-            slider.addEventListener('input', (e) => updateValue(e.target.value));
-            numberInput.addEventListener('change', (e) => updateValue(e.target.value));
-
-            // Add min/max labels
-            const minMaxLabels = document.createElement('div');
-            minMaxLabels.className = 'min-max-labels';
-            minMaxLabels.innerHTML = `
-                <span>${assumption.min}</span>
-                <span>${assumption.max}</span>
-            `;
-
-            sliderContainer.appendChild(slider);
-            sliderContainer.appendChild(minMaxLabels);
+            });
 
             controlDiv.appendChild(label);
-            controlDiv.appendChild(sliderContainer);
             controlDiv.appendChild(numberInput);
             panel.appendChild(controlDiv);
         });
