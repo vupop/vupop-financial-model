@@ -31,110 +31,144 @@ export function populateAssumptionsPanel(assumptions) {
     const panel = document.getElementById('assumptions-panel');
     panel.innerHTML = '';
 
-    for (const key in assumptions) {
-        if (Object.hasOwnProperty.call(assumptions, key)) {
-            const assumption = assumptions[key];
-            const labelText = key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
+    // Group assumptions by category
+    const categories = {
+        'Growth & User Metrics': ['startingMAU', 'year1TargetMAU', 'year2TargetMAU', 'year3TargetMAU', 'year4TargetMAU', 'year5TargetMAU'],
+        'B2C Revenue Assumptions': ['premiumSubscriptionPrice', 'premiumAdoptionRate', 'adRevenuePerUser', 'affiliateCommissionRate'],
+        'B2B Revenue Assumptions': ['socialTierPrice', 'broadcastTierPrice', 'broadcastPlusTierPrice', 'usageFeePerSecond'],
+        'Valuation Multipliers': ['revenueMultiple', 'strategicPremium', 'sportsContentPremium', 'broadcastIntegrationPremium']
+    };
 
+    for (const [category, keys] of Object.entries(categories)) {
+        // Add category header
+        const categoryDiv = document.createElement('div');
+        categoryDiv.className = 'assumption-category';
+        categoryDiv.innerHTML = `<h3 style="color:#FFFF00;margin:1rem 0 0.5rem 0;font-size:1rem;">${category}</h3>`;
+        panel.appendChild(categoryDiv);
+
+        // Add controls for each assumption in this category
+        keys.forEach(key => {
+            const assumption = assumptions[key];
             const controlDiv = document.createElement('div');
             controlDiv.className = 'assumption-control';
 
             const label = document.createElement('label');
             label.htmlFor = key;
-            label.textContent = labelText;
+            label.textContent = key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
 
-            if (ASSUMPTION_TOOLTIPS[key]) {
+            if (assumption.note) {
                 const tooltip = document.createElement('div');
                 tooltip.className = 'tooltip';
-                tooltip.textContent = ASSUMPTION_TOOLTIPS[key];
+                tooltip.textContent = assumption.note;
                 controlDiv.appendChild(tooltip);
             }
 
-            const input = document.createElement('input');
-            input.type = 'number';
-            input.id = key;
-            input.value = (assumption && typeof assumption === 'object' && 'value' in assumption) ? assumption.value : assumption;
+            // Create slider container
+            const sliderContainer = document.createElement('div');
+            sliderContainer.className = 'slider-container';
 
-            // Determine step based on value type (percentage or currency)
-            let val = (assumption && typeof assumption === 'object' && 'value' in assumption) ? assumption.value : assumption;
-            if (key.toLowerCase().includes('rate')) {
-                input.step = '0.01';
-            } else if (val < 10) {
-                input.step = '0.01';
-            } else {
-                input.step = '1';
-            }
+            // Create slider
+            const slider = document.createElement('input');
+            slider.type = 'range';
+            slider.id = `${key}-slider`;
+            slider.min = assumption.min;
+            slider.max = assumption.max;
+            slider.value = assumption.value;
+            slider.step = (assumption.max - assumption.min) / 100;
 
-            input.addEventListener('change', (event) => {
-                const newValue = parseFloat(event.target.value);
-                if (!isNaN(newValue)) {
-                    if (assumption && typeof assumption === 'object' && 'value' in assumption) {
-                        assumption.value = newValue;
-                    } else {
-                        assumptions[key] = newValue;
-                    }
+            // Create number input
+            const numberInput = document.createElement('input');
+            numberInput.type = 'number';
+            numberInput.id = key;
+            numberInput.value = assumption.value;
+            numberInput.min = assumption.min;
+            numberInput.max = assumption.max;
+            numberInput.step = (assumption.max - assumption.min) / 100;
+
+            // Add event listeners for real-time updates
+            const updateValue = (newValue) => {
+                if (!isNaN(newValue) && newValue >= assumption.min && newValue <= assumption.max) {
+                    assumption.value = parseFloat(newValue);
+                    slider.value = newValue;
+                    numberInput.value = newValue;
+                    updateDashboard(); // Real-time update
                 }
-            });
+            };
+
+            slider.addEventListener('input', (e) => updateValue(e.target.value));
+            numberInput.addEventListener('change', (e) => updateValue(e.target.value));
+
+            // Add min/max labels
+            const minMaxLabels = document.createElement('div');
+            minMaxLabels.className = 'min-max-labels';
+            minMaxLabels.innerHTML = `
+                <span>${assumption.min}</span>
+                <span>${assumption.max}</span>
+            `;
+
+            sliderContainer.appendChild(slider);
+            sliderContainer.appendChild(minMaxLabels);
 
             controlDiv.appendChild(label);
-            controlDiv.appendChild(input);
+            controlDiv.appendChild(sliderContainer);
+            controlDiv.appendChild(numberInput);
             panel.appendChild(controlDiv);
-        }
+        });
     }
 }
 
 export function updateKPIs(projections) {
     const kpiGrid = document.querySelector('.kpi-grid');
-    kpiGrid.innerHTML = '';
+    if (!projections || !projections.yearly) return;
 
-    if (!projections || !projections.yearly || projections.yearly.length === 0) {
-        return;
-    }
+    const currentYear = projections.yearly[0];
+    const nextYear = projections.yearly[1];
+    const exitYear = projections.yearly[2];
 
-    // Use Year 4 as the main reference year for all metrics
-    const year4 = projections.yearly[3]; // 0-based index, Year 4 is index 3
+    // Calculate growth rate using the function from calculations.js
+    const growthRate = calculateGrowthRate(currentYear.mau, 'EARLY_STAGE');
 
-    // Helper for formatting
-    const fmtGBP = v => `£${Number(v).toLocaleString('en-GB', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
-    const fmtPct = v => `${Number(v).toFixed(1)}%`;
-
-    // KPI Cards with sublabels
     const kpis = [
         {
-            label: 'Year 4 Valuation',
-            value: fmtGBP(year4.revenue.total * 10),
-            sub: 'Implied exit value at 10x revenue (Year 4)',
+            label: 'Current Valuation',
+            value: `£${currentYear.valuation.toLocaleString('en-GB')}`,
+            sub: 'Based on MAU and revenue multiples'
         },
         {
-            label: 'Year 4 MAU',
-            value: `${(year4.mau / 1000).toFixed(0)}k`,
-            sub: 'Monthly Active Users (target for strategic exit)',
+            label: 'MAU Growth Rate',
+            value: `${(growthRate * 100).toFixed(1)}% MoM`,
+            sub: 'Peak season target'
         },
         {
-            label: 'Year 4 Total Revenue',
-            value: fmtGBP(year4.revenue.total),
-            sub: 'Projected annual revenue (all streams)',
+            label: 'Revenue Mix',
+            value: '40/30/20/10',
+            sub: 'B2B/SaaS/Affiliate/Premium'
         },
         {
-            label: 'Year 4 B2B Revenue',
-            value: fmtGBP(year4.revenue.totalB2B),
-            sub: 'Licensing, SaaS, and broadcast revenue',
+            label: 'Gross Margin',
+            value: `${currentYear.profitability.grossMargin.toFixed(1)}%`,
+            sub: 'Target: 60%+'
         },
         {
-            label: 'Year 4 B2C Revenue',
-            value: fmtGBP(year4.revenue.totalB2C),
-            sub: 'Consumer subscriptions, ads, affiliate',
+            label: 'Exit Valuation',
+            value: `£${exitYear.valuation.toLocaleString('en-GB')}`,
+            sub: 'Year 3 target (15x revenue)'
         },
         {
-            label: 'Year 4 EBITDA',
-            value: fmtGBP(year4.profitability.ebitda),
-            sub: 'Earnings before interest, taxes, depreciation, amortization',
+            label: 'Strategic Premium',
+            value: '1.4x',
+            sub: 'Based on market comps'
         },
         {
-            label: 'Year 4 Gross Margin %',
-            value: year4.revenue.total ? fmtPct((year4.profitability.grossProfit / year4.revenue.total) * 100) : 'N/A',
-            sub: 'High margins reflect IP/licensing model',
+            label: 'User Acquisition Cost',
+            value: '£15-40',
+            sub: 'Early stage target'
         },
+        {
+            label: 'LTV:CAC Ratio',
+            value: '3:1 to 5:1',
+            sub: 'Target range'
+        }
     ];
 
     kpiGrid.innerHTML = kpis.map(kpi => `
@@ -151,58 +185,44 @@ let financialChart = null;
 
 export function updateFinancialChart(projections) {
     const ctx = document.getElementById('financialChart').getContext('2d');
-    if (!projections || !projections.yearly) {
-        return;
-    }
+    if (!projections || !projections.yearly) return;
+
     const labels = projections.yearly.map(p => `Year ${p.year}`);
     const totalRevenueData = projections.yearly.map(p => p.revenue.total);
     const opexData = projections.yearly.map(p => p.costs.totalOpEx);
     const mauData = projections.yearly.map(p => p.mau);
-    // Exit Valuation: use revenue * multiple (Year 3: 15x, Year 4: 10x, Year 5: 8x, else 0)
-    const exitValuationData = projections.yearly.map((p, i) => {
-        if (i === 2) return p.revenue.total * 15;
-        if (i === 3) return p.revenue.total * 10;
-        if (i === 4) return p.revenue.total * 8;
-        return 0;
-    });
+    const valuationData = projections.yearly.map(p => p.valuation);
+
     const data = {
-        labels: labels,
+        labels,
         datasets: [
             {
-                label: 'Exit Valuation (£)',
-                data: exitValuationData,
-                borderColor: '#FFD700',
-                backgroundColor: 'rgba(255, 215, 0, 0.1)',
-                fill: false,
-                tension: 0.4,
-                yAxisID: 'y',
-            },
-            {
-                label: 'Total Revenue (£)',
+                label: 'Total Revenue',
                 data: totalRevenueData,
-                borderColor: '#03a9f4',
-                backgroundColor: 'rgba(3, 169, 244, 0.1)',
-                fill: false,
-                tension: 0.4,
-                yAxisID: 'y',
+                borderColor: '#FFFF00',
+                backgroundColor: 'rgba(255, 255, 0, 0.1)',
+                yAxisID: 'y'
             },
             {
-                label: 'Opex (£)',
+                label: 'Operating Expenses',
                 data: opexData,
-                borderColor: '#e67e22',
-                backgroundColor: 'rgba(230, 126, 34, 0.1)',
-                fill: false,
-                tension: 0.4,
-                yAxisID: 'y',
+                borderColor: '#FF4444',
+                backgroundColor: 'rgba(255, 68, 68, 0.1)',
+                yAxisID: 'y'
             },
             {
                 label: 'MAU',
                 data: mauData,
                 borderColor: '#8bc34a',
                 backgroundColor: 'rgba(139, 195, 74, 0.1)',
-                fill: false,
-                tension: 0.4,
-                yAxisID: 'y1',
+                yAxisID: 'y1'
+            },
+            {
+                label: 'Valuation',
+                data: valuationData,
+                borderColor: '#2196F3',
+                backgroundColor: 'rgba(33, 150, 243, 0.1)',
+                yAxisID: 'y'
             }
         ]
     };
@@ -267,11 +287,16 @@ export function updateProjectionsTable(projections) {
         container.innerHTML = '<p>No data available.</p>';
         return;
     }
-    // Add context sentence above the table
-    const contextSentence = `<div style=\"color:#FFFF00;font-size:0.97rem;margin-bottom:0.5rem;line-height:1.3;\">5-year projections: Key financial metrics and exit valuation milestones based on current model assumptions. This table shows the growth, profitability, and exit potential at each stage.</div>`;
+
+    const contextSentence = `<div style="color:#FFFF00;font-size:0.97rem;margin-bottom:0.5rem;line-height:1.3;">
+        5-year projections: Key financial metrics and exit valuation milestones based on current model assumptions. 
+        This table shows the growth, profitability, and exit potential at each stage.
+    </div>`;
+
     const fmtGBP = v => `£${Number(v).toLocaleString('en-GB', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
     const fmtPct = v => `${Number(v).toFixed(1)}%`;
-    const rows = projections.yearly.map((year, i) => `
+
+    const rows = projections.yearly.map(year => `
         <tr>
             <td>Year ${year.year}</td>
             <td>${year.mau.toLocaleString('en-GB')}</td>
@@ -279,10 +304,11 @@ export function updateProjectionsTable(projections) {
             <td>${fmtGBP(year.revenue.totalB2B)}</td>
             <td>${fmtGBP(year.revenue.totalB2C)}</td>
             <td>${fmtGBP(year.profitability.ebitda)}</td>
-            <td>${year.revenue.total ? fmtPct((year.profitability.grossProfit / year.revenue.total) * 100) : 'N/A'}</td>
-            <td>${i < 2 ? '–' : fmtGBP(year.revenue.total * (i === 2 ? 15 : i === 3 ? 10 : i === 4 ? 8 : 0))}</td>
+            <td>${fmtPct(year.profitability.grossMargin)}</td>
+            <td>${fmtGBP(year.valuation)}</td>
         </tr>
     `).join('');
+
     container.innerHTML = `
         ${contextSentence}
         <table class="projections-table compact-table">
@@ -295,7 +321,7 @@ export function updateProjectionsTable(projections) {
                     <th>B2C Revenue</th>
                     <th>EBITDA</th>
                     <th>Gross Margin %</th>
-                    <th>Exit Valuation</th>
+                    <th>Valuation</th>
                 </tr>
             </thead>
             <tbody>
@@ -309,13 +335,23 @@ export function updateNarrativeSection() {
     const narrative = document.getElementById('narrative-content');
     narrative.innerHTML = `
         <p><span style="color:#FFFF00;font-weight:bold;font-size:1.2rem;">Vupop is positioned to achieve a <b>£100 million valuation at 313K MAU</b>, representing exceptional returns for early investors and a compelling exit opportunity.</span></p>
-        <p>The model projects strong revenue growth, high-margin recurring revenue, and a diversified business model. Key metrics such as EBITDA, gross margin, and B2B/B2C revenue mix are benchmarked against leading market comps, supporting the investment thesis and exit strategy.</p>
+        
+        <p>The model projects strong revenue growth with a diversified business model:</p>
         <ul>
-            <li><b>Exceptional return potential:</b> 22x+ return on current £4.5M valuation</li>
-            <li><b>Conservative user acquisition target:</b> 313K MAU for £100M exit (vs. 1.3M+ for generic platforms)</li>
-            <li><b>Multiple strategic acquirers:</b> Media conglomerates and tech giants with clear rationale for premium offers</li>
-            <li><b>High recurring revenue and margins:</b> 60%+ gross margin, recurring B2B/B2C revenue, and robust IP/licensing model</li>
+            <li><b>Revenue Mix:</b> 40% Broadcast Licensing, 30% SaaS Subscriptions, 20% Affiliate Commissions, 10% Premium Features</li>
+            <li><b>Growth Trajectory:</b> 15-25% MoM growth in early stage, targeting 313K MAU within 36-48 months</li>
+            <li><b>Strategic Premium:</b> 1.4x valuation multiplier based on content synergies and distribution advantages</li>
+            <li><b>Exit Timeline:</b> 7-9 years post-founding, with potential earlier exit at £100-500M ARR</li>
         </ul>
+
+        <p><b>Key Differentiators:</b></p>
+        <ul>
+            <li>Sports content premium (1.5x valuation multiplier)</li>
+            <li>Broadcast integration creates defensible IP (2.0x multiplier)</li>
+            <li>B2B revenue model reduces risk profile (1.2x multiplier)</li>
+            <li>Conservative user acquisition target (313K MAU vs. 1.3M+ for generic platforms)</li>
+        </ul>
+
         <p style="color:#FFFF00;"><b>Bottom line:</b> Vupop's differentiated positioning in sports media, scalable technology, and proven exit comparables make it a compelling opportunity for investors seeking outsized returns on a realistic user growth target.</p>
     `;
 }
@@ -324,27 +360,25 @@ let benchmarkChart = null;
 
 export function updateBenchmarkChart() {
     const ctx = document.getElementById('benchmarkChart').getContext('2d');
-    // Hardcoded market comps (no Vupop)
-    const comps = [
-        { name: 'Discord (2024)', mau: 200_000_000, valuation: 11_700_000_000 },
-        { name: 'Reddit (2024)', mau: 430_000_000, valuation: 5_070_000_000 },
-        { name: 'Truth Social (2024)', mau: 5_000_000, valuation: 4_680_000_000 },
-        { name: 'Snapchat (2017)', mau: 190_000_000, valuation: 18_720_000_000 },
-        { name: 'Pinterest (2019)', mau: 400_000_000, valuation: 7_800_000_000 },
-    ];
+    
     const data = {
-        labels: comps.map(c => c.name),
+        labels: ['Truth Social', 'Snapchat', 'Discord', 'Pinterest', 'Reddit', 'Vupop (Projected)'],
         datasets: [
             {
                 label: 'Valuation (£)',
-                data: comps.map(c => c.valuation),
-                backgroundColor: '#888',
+                data: [4680000000, 18720000000, 11700000000, 7800000000, 5070000000, 100000000],
+                backgroundColor: 'rgba(255, 255, 0, 0.2)',
+                borderColor: '#FFFF00',
+                borderWidth: 1,
+                yAxisID: 'y'
             },
             {
                 label: 'MAU (millions)',
-                data: comps.map(c => c.mau / 1_000_000),
-                backgroundColor: 'rgba(52, 152, 219, 0.5)',
-                yAxisID: 'y1',
+                data: [5, 190, 154, 400, 430, 0.313],
+                backgroundColor: 'rgba(3, 169, 244, 0.2)',
+                borderColor: '#03a9f4',
+                borderWidth: 1,
+                yAxisID: 'y1'
             }
         ]
     };
@@ -402,19 +436,18 @@ export function updateBenchmarkChart() {
         });
     }
 
-    // Add context sentence below chart
-    const container = document.getElementById('benchmark-chart-container');
-    let contextDiv = document.getElementById('benchmark-context');
-    if (!contextDiv) {
-        contextDiv = document.createElement('div');
-        contextDiv.id = 'benchmark-context';
-        contextDiv.style.color = '#FFFF00';
-        contextDiv.style.fontSize = '0.97rem';
-        contextDiv.style.lineHeight = '1.3';
-        contextDiv.style.marginTop = '10px';
-        contextDiv.style.textAlign = 'center';
-    }
-    contextDiv.textContent = "Benchmarking data shows how vupop's projected metrics compare to recent market leaders valuations and MAU at sale. The niche nature of vupops audience and industry will indicate a higher multiple of valuation as seen in the MAU to valuation ratios of Truth Social and Snapchat.";
+    // Update context text with more detailed analysis
+    const contextDiv = document.getElementById('benchmark-context');
+    contextDiv.innerHTML = `
+        <p>Vupop's projected £100M valuation at 313K MAU represents a premium valuation multiple compared to market leaders, justified by:</p>
+        <ul style="text-align:left;margin-top:0.5rem;">
+            <li>Sports content premium (1.5x multiplier)</li>
+            <li>Broadcast integration (2.0x multiplier)</li>
+            <li>B2B revenue model (1.2x multiplier)</li>
+            <li>Strategic acquisition premium (1.4x multiplier)</li>
+        </ul>
+        <p style="margin-top:0.5rem;">This positions Vupop between Discord (£76/MAU) and Truth Social (£936/MAU) in terms of value per user, reflecting its unique market position.</p>
+    `;
 }
 
 export function updateCapTableChart() {

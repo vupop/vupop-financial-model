@@ -63,21 +63,24 @@ function initializeApp() {
 }
 
 function updateDashboard() {
-    state.projections = calculateProjections(assumptions, fixedInputs);
-    console.log('Dashboard updated with new projections:', state.projections);
-    updateKPIs(state.projections);
-    updateFinancialChart(state.projections);
-    updateProjectionsTable(state.projections);
+    // Use the existing calculateProjections function from calculations.js
+    const projections = calculateProjections(assumptions, fixedInputs);
+    
+    // Update all UI components with the projections
+    updateKPIs(projections);
+    updateFinancialChart(projections);
+    updateProjectionsTable(projections);
     updateNarrativeSection();
     updateBenchmarkChart();
     updateCapTableChart();
-    // Add new fundraising metrics widgets
-    updateSEISGauge(190000, 250000); // TODO: Replace with real values from state
+    
+    // Update fundraising metrics
+    updateSEISGauge(190000, 250000);
     updateFundraisingMetrics({
         seisAmount: 190000,
         seisMax: 250000,
         currentVal: 4500000,
-        nextRaise: 3500000,
+        nextRaise: '1.5–3M',
         nextVal: 15000000
     });
 } 

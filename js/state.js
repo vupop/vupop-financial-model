@@ -1,23 +1,121 @@
 // js/state.js
 
 export const assumptions = {
-    // User Growth
-    startingMAU: { value: 0, note: '' },
-    year1TargetMAU: { value: 0, note: '' },
-    year2TargetMAU: { value: 0, note: '' },
-    year3TargetMAU: { value: 0, note: '' },
-    year4TargetMAU: { value: 0, note: '' },
-    year5TargetMAU: { value: 0, note: '' },
-    // B2C Pricing
-    premiumSubscriptionPrice: { value: 0, note: '' },
-    premiumAdoptionRate: { value: 0, note: '' },
-    adRevenuePerUser: { value: 0, note: '' },
-    affiliateCommissionRate: { value: 0, note: '' },
-    // B2B Pricing
-    socialTierPrice: { value: 0, note: '' },
-    broadcastTierPrice: { value: 0, note: '' },
-    broadcastPlusTierPrice: { value: 0, note: '' },
-    usageFeePerSecond: { value: 0, note: '' },
+    // Growth & User Metrics
+    startingMAU: { 
+        value: 10000, 
+        note: 'Initial MAU at platform launch (Month 6)',
+        min: 5000,
+        max: 20000
+    },
+    year1TargetMAU: { 
+        value: 50000, 
+        note: 'Conservative target: 50K MAU (400% growth)',
+        min: 30000,
+        max: 75000
+    },
+    year2TargetMAU: { 
+        value: 150000, 
+        note: 'Conservative target: 150K MAU (200% growth)',
+        min: 100000,
+        max: 250000
+    },
+    year3TargetMAU: { 
+        value: 313000, 
+        note: 'Exit target: 313K MAU for £100M valuation',
+        min: 250000,
+        max: 500000
+    },
+    year4TargetMAU: { 
+        value: 500000, 
+        note: 'Growth target: 500K MAU for £160M+ valuation',
+        min: 400000,
+        max: 1000000
+    },
+    year5TargetMAU: { 
+        value: 2000000, 
+        note: 'Major platform target: 2M MAU for £638M valuation',
+        min: 1000000,
+        max: 5000000
+    },
+
+    // B2C Revenue Assumptions
+    premiumSubscriptionPrice: { 
+        value: 7.99, 
+        note: 'Monthly price for premium B2C subscription',
+        min: 4.99,
+        max: 19.99
+    },
+    premiumAdoptionRate: { 
+        value: 5, 
+        note: 'Percentage of users who subscribe to premium',
+        min: 1,
+        max: 15
+    },
+    adRevenuePerUser: { 
+        value: 0.50, 
+        note: 'Monthly ad revenue per user (from Year 3)',
+        min: 0.25,
+        max: 2.00
+    },
+    affiliateCommissionRate: { 
+        value: 20, 
+        note: 'Percentage of revenue shared as affiliate commission',
+        min: 10,
+        max: 40
+    },
+
+    // B2B Revenue Assumptions
+    socialTierPrice: { 
+        value: 499, 
+        note: 'Monthly price for B2B Social Tier',
+        min: 299,
+        max: 999
+    },
+    broadcastTierPrice: { 
+        value: 1999, 
+        note: 'Monthly price for B2B Broadcast Tier',
+        min: 999,
+        max: 3999
+    },
+    broadcastPlusTierPrice: { 
+        value: 4999, 
+        note: 'Monthly price for B2B Broadcast+ Tier',
+        min: 2999,
+        max: 9999
+    },
+    usageFeePerSecond: { 
+        value: 0.01, 
+        note: 'Fee per second of licensed broadcast content (B2B)',
+        min: 0.005,
+        max: 0.05
+    },
+
+    // Valuation Multipliers
+    revenueMultiple: {
+        value: 13.3,
+        note: 'Base revenue multiple for valuation (Year 3)',
+        min: 8,
+        max: 20
+    },
+    strategicPremium: {
+        value: 1.4,
+        note: 'Strategic acquisition premium multiplier',
+        min: 1.2,
+        max: 1.6
+    },
+    sportsContentPremium: {
+        value: 1.5,
+        note: 'Premium for sports content focus',
+        min: 1.2,
+        max: 2.0
+    },
+    broadcastIntegrationPremium: {
+        value: 2.0,
+        note: 'Premium for broadcast integration capabilities',
+        min: 1.5,
+        max: 2.5
+    }
 };
 
 export const fixedInputs = {
