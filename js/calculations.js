@@ -147,6 +147,10 @@ function calculateProfitability(totalRevenue, costs) {
 }
 
 export function calculateValuation(mau, revenue, year) {
+    // Custom logic for launch and end of year 1
+    if (year === 1) return 9000000; // Launch valuation: £9M
+    if (year === 2) return 15000000; // End of year 1: £15M
+
     // Calculate MAU-based valuation
     const totalMultiplier = Object.values(VALUATION_MULTIPLIERS).reduce((a, b) => a * b, 1);
     const valuePerMAU = VALUATION_MULTIPLIERS.BASE_MAU_VALUE * totalMultiplier;
