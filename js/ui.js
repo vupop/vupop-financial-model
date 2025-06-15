@@ -440,16 +440,18 @@ export function updateBenchmarkChart() {
 
     // Update context text with more detailed analysis
     const contextDiv = document.getElementById('benchmark-context');
-    contextDiv.innerHTML = `
-        <p>Vupop's projected £100M valuation at 313K MAU represents a premium valuation multiple compared to market leaders, justified by:</p>
-        <ul style="text-align:left;margin-top:0.5rem;">
-            <li>Sports content premium (1.5x multiplier)</li>
-            <li>Broadcast integration (2.0x multiplier)</li>
-            <li>B2B revenue model (1.2x multiplier)</li>
-            <li>Strategic acquisition premium (1.4x multiplier)</li>
-        </ul>
-        <p style="margin-top:0.5rem;">This positions Vupop between Discord (£76/MAU) and Truth Social (£936/MAU) in terms of value per user, reflecting its unique market position.</p>
-    `;
+    if (contextDiv) {
+        contextDiv.innerHTML = `
+            <p>Vupop's projected £100M valuation at 313K MAU represents a premium valuation multiple compared to market leaders, justified by:</p>
+            <ul style="text-align:left;margin-top:0.5rem;">
+                <li>Sports content premium (1.5x multiplier)</li>
+                <li>Broadcast integration (2.0x multiplier)</li>
+                <li>B2B revenue model (1.2x multiplier)</li>
+                <li>Strategic acquisition premium (1.4x multiplier)</li>
+            </ul>
+            <p style="margin-top:0.5rem;">This positions Vupop between Discord (£76/MAU) and Truth Social (£936/MAU) in terms of value per user, reflecting its unique market position.</p>
+        `;
+    }
 }
 
 export function updateCapTableChart() {
