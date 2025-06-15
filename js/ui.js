@@ -1,3 +1,32 @@
+// Tooltip text for assumptions
+const ASSUMPTION_TOOLTIPS = {
+    startingMAU: 'Monthly Active Users at launch (Month 1)',
+    year1TargetMAU: 'Projected MAU at the end of Year 1',
+    year2TargetMAU: 'Projected MAU at the end of Year 2',
+    year3TargetMAU: 'Projected MAU at the end of Year 3 (exit target)',
+    year4TargetMAU: 'Projected MAU at the end of Year 4 (revenue target year)',
+    year5TargetMAU: 'Projected MAU at the end of Year 5 (extended growth)',
+    premiumSubscriptionPrice: 'Monthly price for premium B2C subscription',
+    premiumAdoptionRate: 'Percentage of users who subscribe to premium',
+    adRevenuePerUser: 'Monthly ad revenue per user (from Year 3)',
+    affiliateCommissionRate: 'Percentage of revenue shared as affiliate commission',
+    socialTierPrice: 'Monthly price for B2B Social Tier',
+    broadcastTierPrice: 'Monthly price for B2B Broadcast Tier',
+    broadcastPlusTierPrice: 'Monthly price for B2B Broadcast+ Tier',
+    usageFeePerSecond: 'Fee per second of licensed broadcast content (B2B)',
+};
+
+// Tooltip text for KPIs
+const KPI_TOOLTIPS = {
+    'Year 4 Valuation': 'Estimated company valuation in Year 4 based on revenue multiple.',
+    'Year 4 MAU': 'Projected Monthly Active Users at the end of Year 4.',
+    'Year 4 Total Revenue': 'Total projected revenue for Year 4.',
+    'Year 4 B2B Revenue': 'Projected B2B (business) revenue for Year 4.',
+    'Year 4 B2C Revenue': 'Projected B2C (consumer) revenue for Year 4.',
+    'Year 4 EBITDA': 'Earnings Before Interest, Taxes, Depreciation, and Amortization for Year 4.',
+    'Year 4 Gross Margin %': 'Gross margin as a percentage of revenue for Year 4.',
+};
+
 export function populateAssumptionsPanel(assumptions) {
     const panel = document.getElementById('assumptions-panel');
     panel.innerHTML = ''; // Clear existing content
@@ -13,16 +42,20 @@ export function populateAssumptionsPanel(assumptions) {
             const label = document.createElement('label');
             label.htmlFor = key;
             label.textContent = labelText;
+            if (ASSUMPTION_TOOLTIPS[key]) {
+                label.title = ASSUMPTION_TOOLTIPS[key];
+            }
 
             const input = document.createElement('input');
             input.type = 'number';
             input.id = key;
-            input.value = assumption;
+            input.value = (assumption && typeof assumption === 'object' && 'value' in assumption) ? assumption.value : assumption;
 
             // Determine step based on value type (percentage or currency)
+            let val = (assumption && typeof assumption === 'object' && 'value' in assumption) ? assumption.value : assumption;
             if (key.toLowerCase().includes('rate')) {
                 input.step = '0.01';
-            } else if (assumption < 10) {
+            } else if (val < 10) {
                 input.step = '0.01';
             } else {
                 input.step = '1';
@@ -31,7 +64,11 @@ export function populateAssumptionsPanel(assumptions) {
             input.addEventListener('change', (event) => {
                 const newValue = parseFloat(event.target.value);
                 if (!isNaN(newValue)) {
-                    assumptions[key] = newValue;
+                    if (assumption && typeof assumption === 'object' && 'value' in assumption) {
+                        assumption.value = newValue;
+                    } else {
+                        assumptions[key] = newValue;
+                    }
                 }
             });
 
@@ -90,7 +127,7 @@ export function updateKPIs(projections) {
     ];
 
     kpiGrid.innerHTML = kpis.map(kpi => `
-        <div class="kpi-card">
+        <div class="kpi-card" title="${KPI_TOOLTIPS[kpi.label] || ''}">
             <h3>${kpi.label}</h3>
             <p>${kpi.value}</p>
         </div>
