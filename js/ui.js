@@ -270,11 +270,11 @@ export function updateProjectionsTable(projections) {
             <td>${fmtGBP(year.revenue.totalB2C)}</td>
             <td>${fmtGBP(year.profitability.ebitda)}</td>
             <td>${year.revenue.total ? fmtPct((year.profitability.grossProfit / year.revenue.total) * 100) : 'N/A'}</td>
-            <td>${fmtGBP(year.revenue.total * (i === 2 ? 15 : i === 3 ? 10 : i === 4 ? 8 : 0))}</td>
+            <td>${i < 2 ? '–' : fmtGBP(year.revenue.total * (i === 2 ? 15 : i === 3 ? 10 : i === 4 ? 8 : 0))}</td>
         </tr>
     `).join('');
     container.innerHTML = `
-        <table class="projections-table">
+        <table class="projections-table compact-table">
             <thead>
                 <tr>
                     <th>Year</th>

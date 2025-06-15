@@ -413,4 +413,13 @@ body {
 .projections-table th {
     color: var(--primary-color);
     background: #222;
+}
+
+.compact-table th, .compact-table td {
+    font-size: 0.95rem;
+    padding: 0.35rem 0.7rem;
+}
+
+.compact-table th {
+    font-size: 1rem;
 } 
