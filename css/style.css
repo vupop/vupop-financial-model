@@ -217,89 +217,93 @@ body {
     margin-bottom: 1rem;
 }
 
-.kpi-card {
+.kpi-card, .chart-container, .narrative-area, .table-area {
     background: var(--card-background);
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-    border: 1px solid #333;
-    padding: 1rem 1.5rem;
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 100px;
+    border-radius: 12px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.28), 0 1.5px 6px rgba(0,0,0,0.18);
+    border: 1px solid #232323;
+    padding: 0.85rem 1.1rem;
+    margin-bottom: 1.1rem;
+    transition: box-shadow 0.18s, border 0.18s;
     position: relative;
+    overflow: hidden;
+}
+
+.kpi-card {
+    min-height: 90px;
+    font-size: 0.97rem;
+    margin-bottom: 0.7rem;
+    padding: 0.8rem 1rem 0.7rem 1rem;
 }
 
 .kpi-card h3 {
-    margin: 0 0 0.5rem 0;
-    font-size: 1.1rem;
-    color: #a0a0a0;
+    margin: 0 0 0.35rem 0;
+    font-size: 1.01rem;
+    color: #b0b0b0;
     font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.4em;
 }
 
 .kpi-card p {
     margin: 0;
-    font-size: 2rem;
+    font-size: 1.45rem;
     font-weight: bold;
     color: var(--primary-color);
+    letter-spacing: -0.5px;
 }
 
 .charts-area {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1.5rem;
-    margin-bottom: 1.5rem;
-    background: none;
+    gap: 1.1rem;
+    margin-bottom: 1.1rem;
 }
 
 .chart-container {
-    background-color: var(--card-background);
-    padding: 1rem;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.08);
-    flex: 1 1 400px;
-    min-width: 350px;
-    min-height: 320px;
-    height: 350px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
+    min-width: 320px;
+    min-height: 260px;
+    height: 320px;
+    font-size: 0.97rem;
+    padding: 0.8rem 1rem 0.7rem 1rem;
 }
 
 .table-area {
-    margin-bottom: 1.5rem;
-}
-
-#projections-table-container {
-    background: var(--card-background);
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.08);
-    padding: 1rem;
-    overflow-x: auto;
+    font-size: 0.96rem;
+    padding: 0.7rem 0.7rem 0.5rem 0.7rem;
 }
 
 .narrative-area {
-    background: var(--card-background);
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.08);
-    padding: 1.1rem;
-    margin-bottom: 2rem;
-    font-size: 0.98rem;
-}
-
-.narrative-area h2 {
-    margin-top: 0;
-    color: var(--primary-color);
-    font-size: 1.2rem;
-    font-weight: 700;
+    font-size: 0.97rem;
+    padding: 0.9rem 1.1rem 0.8rem 1.1rem;
+    margin-bottom: 1.1rem;
 }
 
 #narrative-content {
-    color: var(--text-color);
-    font-size: 0.97rem;
-    line-height: 1.6;
+    font-size: 0.96rem;
+}
+
+.projections-table th, .projections-table td {
+    padding: 0.45em 0.7em;
+    font-size: 0.96rem;
+}
+
+.projections-table th {
+    font-size: 1.01rem;
+}
+
+.cap-table-flex {
+    gap: 1.1rem !important;
+}
+
+@media (max-width: 900px) {
+    .charts-area, .cap-table-flex {
+        flex-direction: column;
+        gap: 0.7rem !important;
+    }
+    .chart-container, .table-area {
+        min-width: 0;
+        width: 100%;
+    }
 }
 
 /* Dashboard Layout */
@@ -404,18 +408,6 @@ body {
 .kpi-card:hover .tooltip {
     opacity: 1;
     pointer-events: auto;
-}
-
-.projections-table th, .projections-table td {
-    color: var(--text-color);
-    background: var(--card-background);
-    border: 1px solid #333;
-    padding: 0.5rem 1rem;
-}
-
-.projections-table th {
-    color: var(--primary-color);
-    background: #222;
 }
 
 .compact-table th, .compact-table td {
