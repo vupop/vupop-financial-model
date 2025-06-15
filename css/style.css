@@ -425,4 +425,9 @@ body {
 
 .compact-table th {
     font-size: 1rem;
+}
+
+#benchmark-context {
+    font-size: 0.97rem;
+    line-height: 1.3;
 } 

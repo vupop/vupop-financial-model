@@ -267,6 +267,8 @@ export function updateProjectionsTable(projections) {
         container.innerHTML = '<p>No data available.</p>';
         return;
     }
+    // Add context sentence above the table
+    const contextSentence = `<div style=\"color:#FFD700;font-size:0.97rem;margin-bottom:0.5rem;line-height:1.3;\">5-year projections: Key financial metrics and exit valuation milestones based on current model assumptions. This table helps investors understand the growth, profitability, and exit potential at each stage.</div>`;
     const fmtGBP = v => `£${Number(v).toLocaleString('en-GB', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
     const fmtPct = v => `${Number(v).toFixed(1)}%`;
     const rows = projections.yearly.map((year, i) => `
@@ -282,6 +284,7 @@ export function updateProjectionsTable(projections) {
         </tr>
     `).join('');
     container.innerHTML = `
+        ${contextSentence}
         <table class="projections-table compact-table">
             <thead>
                 <tr>
@@ -305,15 +308,15 @@ export function updateProjectionsTable(projections) {
 export function updateNarrativeSection() {
     const narrative = document.getElementById('narrative-content');
     narrative.innerHTML = `
-        <p><span style="color:#FFD700;font-weight:bold;font-size:1.2rem;">Vupop's exit valuation is driven by its unique position in sports media, proprietary broadcast licensing technology, and a diversified B2B/B2C revenue model.</span></p>
-        <p><strong>Key insight:</strong> <b>Vupop can achieve a £100M+ exit at just 313K MAU</b>—a fraction of the user base required by generic social platforms—due to premium market multiples for niche, IP-driven, and sports-focused platforms. Recent market comps (Truth Social, Snapchat) show that differentiated content and strategic acquirer interest can drive valuations far above the median per-user multiple.</p>
+        <p><span style="color:#FFD700;font-weight:bold;font-size:1.2rem;">Vupop is positioned to achieve a <b>£100 million valuation at 313K MAU</b>, representing exceptional returns for early investors and a compelling exit opportunity.</span></p>
+        <p>The model projects strong revenue growth, high-margin recurring revenue, and a diversified business model. Key metrics such as EBITDA, gross margin, and B2B/B2C revenue mix are benchmarked against leading market comps, supporting the investment thesis and exit strategy.</p>
         <ul>
-            <li><b>Premium valuation factors:</b> Sports content, broadcast integration, and recurring B2B revenue streams justify a 5x+ uplift over the market median per-MAU multiple.</li>
-            <li><b>Strategic acquirer landscape:</b> Media conglomerates (Disney, Comcast, Warner Bros) and tech giants (Google, Meta) are actively seeking differentiated, IP-rich platforms for acquisition, with recent deals supporting high exit multiples.</li>
-            <li><b>Growth scenarios:</b> Conservative (Discord-like) and aggressive (TikTok-like) trajectories both support a credible path to £100M+ exit within 3-4 years, with upside to £160M+ at higher MAU.</li>
-            <li><b>Revenue model:</b> High-margin, recurring revenue (licensing, SaaS, affiliate) and a robust option pool support both growth and retention.</li>
+            <li><b>Exceptional return potential:</b> 22x+ return on current £4.5M valuation</li>
+            <li><b>Conservative user acquisition target:</b> 313K MAU for £100M exit (vs. 1.3M+ for generic platforms)</li>
+            <li><b>Multiple strategic acquirers:</b> Media conglomerates and tech giants with clear rationale for premium offers</li>
+            <li><b>High recurring revenue and margins:</b> 60%+ gross margin, recurring B2B/B2C revenue, and robust IP/licensing model</li>
         </ul>
-        <p style="color:#FFD700;"><b>Bottom line:</b> Vupop's differentiated model, strategic market timing, and proven exit comparables make it a compelling opportunity for investors seeking outsized returns on a realistic user growth target.</p>
+        <p style="color:#FFD700;"><b>Bottom line:</b> Vupop's differentiated positioning in sports media, scalable technology, and proven exit comparables make it a compelling opportunity for investors seeking outsized returns on a realistic user growth target.</p>
     `;
 }
 
@@ -406,10 +409,10 @@ export function updateBenchmarkChart() {
         contextDiv = document.createElement('div');
         contextDiv.id = 'benchmark-context';
         contextDiv.style.color = '#FFD700';
-        contextDiv.style.fontSize = '1rem';
+        contextDiv.style.fontSize = '0.97rem';
+        contextDiv.style.lineHeight = '1.3';
         contextDiv.style.marginTop = '10px';
         contextDiv.style.textAlign = 'center';
-        container.appendChild(contextDiv);
     }
     contextDiv.textContent = "Benchmarking data shows how vupop's projected metrics compare to recent market leaders valuations and MAU at sale. The niche nature of vupops audience and industry will indicate a higher multiple of valuation as seen in the MAU to valuation ratios of Truth Social and Snapchat.";
 }
