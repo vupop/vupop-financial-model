@@ -268,7 +268,7 @@ export function updateProjectionsTable(projections) {
         return;
     }
     // Add context sentence above the table
-    const contextSentence = `<div style=\"color:#FFD700;font-size:0.97rem;margin-bottom:0.5rem;line-height:1.3;\">5-year projections: Key financial metrics and exit valuation milestones based on current model assumptions. This table helps investors understand the growth, profitability, and exit potential at each stage.</div>`;
+    const contextSentence = `<div style=\"color:#FFD700;font-size:0.97rem;margin-bottom:0.5rem;line-height:1.3;\">5-year projections: Key financial metrics and exit valuation milestones based on current model assumptions. This table shows the growth, profitability, and exit potential at each stage.</div>`;
     const fmtGBP = v => `£${Number(v).toLocaleString('en-GB', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
     const fmtPct = v => `${Number(v).toFixed(1)}%`;
     const rows = projections.yearly.map((year, i) => `
@@ -465,4 +465,71 @@ export function updateCapTableChart() {
             options: options
         });
     }
+}
+
+export function updateSEISGauge(seisAmount, seisMax) {
+    const ctx = document.getElementById('seisGauge').getContext('2d');
+    const percent = seisAmount / seisMax;
+    const data = {
+        datasets: [{
+            data: [seisAmount, seisMax - seisAmount],
+            backgroundColor: [
+                '#00e676', // Green for remaining
+                '#333',    // Grey for used
+            ],
+            borderWidth: 0,
+            circumference: 180,
+            rotation: 270,
+            cutout: '75%',
+        }],
+        labels: ['Remaining', 'Used']
+    };
+    const options = {
+        responsive: true,
+        plugins: {
+            legend: { display: false },
+            tooltip: {
+                callbacks: {
+                    label: function(context) {
+                        return context.label + ': £' + context.parsed + '';
+                    }
+                }
+            },
+            title: {
+                display: true,
+                text: 'SEIS Amount Remaining',
+                color: '#FFFF00',
+                font: { size: 15, weight: 'bold' },
+                padding: { bottom: 10 }
+            },
+        },
+    };
+    if (window.seisGaugeInstance) {
+        window.seisGaugeInstance.data = data;
+        window.seisGaugeInstance.options = options;
+        window.seisGaugeInstance.update();
+    } else {
+        window.seisGaugeInstance = new Chart(ctx, {
+            type: 'doughnut',
+            data: data,
+            options: options
+        });
+    }
+    // Set the percentage text in the center
+    ctx.save();
+    ctx.font = 'bold 1.2rem Segoe UI, Arial';
+    ctx.fillStyle = '#FFFF00';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.clearRect(80, 60, 120, 40);
+    ctx.fillText((percent * 100).toFixed(1) + '%', 100, 100);
+    ctx.restore();
+}
+
+export function updateFundraisingMetrics({ seisAmount, seisMax, currentVal, nextRaise, nextVal }) {
+    // Numeric widgets for fundraising metrics
+    document.getElementById('current-valuation').innerHTML = `<div class="numeric-widget"><span class="num">£${Number(currentVal).toLocaleString('en-GB')}</span><span class="label">Current Valuation</span></div>`;
+    document.getElementById('next-round-raise').innerHTML = `<div class="numeric-widget"><span class="num">£${Number(nextRaise).toLocaleString('en-GB')}</span><span class="label">Next Round Raise</span></div>`;
+    document.getElementById('target-next-valuation').innerHTML = `<div class="numeric-widget"><span class="num">£${Number(nextVal).toLocaleString('en-GB')}</span><span class="label">Target Valuation</span></div>`;
+    // SEIS handled by gauge
 } 

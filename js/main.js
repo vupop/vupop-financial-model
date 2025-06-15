@@ -1,6 +1,6 @@
 // Vupop Financial Model Main Script 
 import { assumptions, state, parseFinancialData, fixedInputs } from './state.js';
-import { populateAssumptionsPanel, updateKPIs, updateFinancialChart, updateProjectionsTable, updateNarrativeSection, updateBenchmarkChart, updateCapTableChart } from './ui.js';
+import { populateAssumptionsPanel, updateKPIs, updateFinancialChart, updateProjectionsTable, updateNarrativeSection, updateBenchmarkChart, updateCapTableChart, updateSEISGauge, updateFundraisingMetrics } from './ui.js';
 import { calculateProjections } from './calculations.js';
 import { initAuth } from './auth.js';
 
@@ -71,4 +71,13 @@ function updateDashboard() {
     updateNarrativeSection();
     updateBenchmarkChart();
     updateCapTableChart();
+    // Add new fundraising metrics widgets
+    updateSEISGauge(190000, 250000); // TODO: Replace with real values from state
+    updateFundraisingMetrics({
+        seisAmount: 190000,
+        seisMax: 250000,
+        currentVal: 4500000,
+        nextRaise: 3500000,
+        nextVal: 15000000
+    });
 } 
