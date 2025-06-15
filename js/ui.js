@@ -98,35 +98,42 @@ export function updateKPIs(projections) {
     const fmtGBP = v => `£${Number(v).toLocaleString('en-GB', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
     const fmtPct = v => `${Number(v).toFixed(1)}%`;
 
-    // KPI Cards
+    // KPI Cards with sublabels
     const kpis = [
         {
             label: 'Year 4 Valuation',
             value: fmtGBP(year4.revenue.total * 10),
+            sub: 'Implied exit value at 10x revenue (Year 4)',
         },
         {
             label: 'Year 4 MAU',
             value: `${(year4.mau / 1000).toFixed(0)}k`,
+            sub: 'Monthly Active Users (target for strategic exit)',
         },
         {
             label: 'Year 4 Total Revenue',
             value: fmtGBP(year4.revenue.total),
+            sub: 'Projected annual revenue (all streams)',
         },
         {
             label: 'Year 4 B2B Revenue',
             value: fmtGBP(year4.revenue.totalB2B),
+            sub: 'Licensing, SaaS, and broadcast revenue',
         },
         {
             label: 'Year 4 B2C Revenue',
             value: fmtGBP(year4.revenue.totalB2C),
+            sub: 'Consumer subscriptions, ads, affiliate',
         },
         {
             label: 'Year 4 EBITDA',
             value: fmtGBP(year4.profitability.ebitda),
+            sub: 'Earnings before interest, taxes, depreciation, amortization',
         },
         {
             label: 'Year 4 Gross Margin %',
             value: year4.revenue.total ? fmtPct((year4.profitability.grossProfit / year4.revenue.total) * 100) : 'N/A',
+            sub: 'High margins reflect IP/licensing model',
         },
     ];
 
@@ -134,6 +141,7 @@ export function updateKPIs(projections) {
         <div class="kpi-card">
             <h3>${kpi.label}</h3>
             <p>${kpi.value}</p>
+            <div style="font-size:0.95rem;color:#FFD700;margin-top:0.2rem;">${kpi.sub || ''}</div>
             ${KPI_TOOLTIPS[kpi.label] ? `<div class="tooltip">${KPI_TOOLTIPS[kpi.label]}</div>` : ''}
         </div>
     `).join('');
@@ -297,13 +305,15 @@ export function updateProjectionsTable(projections) {
 export function updateNarrativeSection() {
     const narrative = document.getElementById('narrative-content');
     narrative.innerHTML = `
-        <p><strong>Vupop is positioned to achieve a £100 million valuation at 313K MAU</strong>, representing exceptional returns for early investors and a compelling exit opportunity. The model projects strong revenue growth, high-margin recurring revenue, and a diversified business model. Key metrics such as EBITDA, gross margin, and B2B/B2C revenue mix are benchmarked against leading market comps, supporting the investment thesis and exit strategy.</p>
+        <p><span style="color:#FFD700;font-weight:bold;font-size:1.2rem;">Vupop's exit valuation is driven by its unique position in sports media, proprietary broadcast licensing technology, and a diversified B2B/B2C revenue model.</span></p>
+        <p><strong>Key insight:</strong> <b>Vupop can achieve a £100M+ exit at just 313K MAU</b>—a fraction of the user base required by generic social platforms—due to premium market multiples for niche, IP-driven, and sports-focused platforms. Recent market comps (Truth Social, Snapchat) show that differentiated content and strategic acquirer interest can drive valuations far above the median per-user multiple.</p>
         <ul>
-            <li><strong>Exceptional return potential:</strong> 22x+ return on current £4.5M valuation</li>
-            <li><strong>Conservative user acquisition target:</strong> 313K MAU for £100M exit</li>
-            <li><strong>Multiple strategic acquirers</strong> with clear rationale</li>
-            <li><strong>High recurring revenue and margins</strong> vs. market benchmarks</li>
+            <li><b>Premium valuation factors:</b> Sports content, broadcast integration, and recurring B2B revenue streams justify a 5x+ uplift over the market median per-MAU multiple.</li>
+            <li><b>Strategic acquirer landscape:</b> Media conglomerates (Disney, Comcast, Warner Bros) and tech giants (Google, Meta) are actively seeking differentiated, IP-rich platforms for acquisition, with recent deals supporting high exit multiples.</li>
+            <li><b>Growth scenarios:</b> Conservative (Discord-like) and aggressive (TikTok-like) trajectories both support a credible path to £100M+ exit within 3-4 years, with upside to £160M+ at higher MAU.</li>
+            <li><b>Revenue model:</b> High-margin, recurring revenue (licensing, SaaS, affiliate) and a robust option pool support both growth and retention.</li>
         </ul>
+        <p style="color:#FFD700;"><b>Bottom line:</b> Vupop's differentiated model, strategic market timing, and proven exit comparables make it a compelling opportunity for investors seeking outsized returns on a realistic user growth target.</p>
     `;
 }
 
