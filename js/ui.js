@@ -32,6 +32,9 @@ const KPI_TOOLTIPS = {
 export function populateAssumptionsPanel(assumptions) {
     const panel = document.getElementById('assumptions-panel');
     panel.innerHTML = '';
+    panel.style.display = 'grid';
+    panel.style.gridTemplateColumns = '1fr 1fr';
+    panel.style.gap = '1.2rem 2.5rem';
 
     // Group assumptions by category
     const categories = {
@@ -42,40 +45,59 @@ export function populateAssumptionsPanel(assumptions) {
     };
 
     for (const [category, keys] of Object.entries(categories)) {
-        // Add category header
+        // Add category header (full width)
         const categoryDiv = document.createElement('div');
         categoryDiv.className = 'assumption-category';
-        categoryDiv.innerHTML = `<h3 style="color:#FFFF00;margin:1rem 0 0.5rem 0;font-size:1rem;">${category}</h3>`;
+        categoryDiv.style.gridColumn = '1 / span 2';
+        categoryDiv.innerHTML = `<h3 style="color:#FFFF00;margin:1rem 0 0.5rem 0;font-size:1.08rem;">${category}</h3>`;
         panel.appendChild(categoryDiv);
 
-        // Add controls for each assumption in this category
         keys.forEach(key => {
             const assumption = assumptions[key];
             const controlDiv = document.createElement('div');
             controlDiv.className = 'assumption-control';
+            controlDiv.style.display = 'flex';
+            controlDiv.style.flexDirection = 'column';
+            controlDiv.style.marginBottom = '0.5rem';
 
+            // Label
             const label = document.createElement('label');
             label.htmlFor = key;
             label.textContent = key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
+            label.style.fontSize = '0.98rem';
+            label.style.fontWeight = '500';
+            label.style.marginBottom = '0.1rem';
+            label.style.color = '#fff';
 
+            // Sublabel/tooltip
+            let sublabel = null;
             if (assumption.note) {
-                const tooltip = document.createElement('div');
-                tooltip.className = 'tooltip';
-                tooltip.textContent = assumption.note;
-                controlDiv.appendChild(tooltip);
+                sublabel = document.createElement('div');
+                sublabel.className = 'assumption-sublabel';
+                sublabel.textContent = assumption.note;
+                sublabel.style.fontSize = '0.85rem';
+                sublabel.style.color = '#bdbdbd';
+                sublabel.style.marginBottom = '0.1rem';
             }
 
-            // Create number input only (no slider)
+            // Number input
             const numberInput = document.createElement('input');
             numberInput.type = 'number';
             numberInput.id = key;
             numberInput.value = assumption.value;
+            numberInput.style.fontSize = '1rem';
+            numberInput.style.padding = '0.25rem 0.5rem';
+            numberInput.style.borderRadius = '6px';
+            numberInput.style.border = '1px solid #444';
+            numberInput.style.background = '#181818';
+            numberInput.style.color = '#fff';
+            numberInput.style.marginTop = '0.1rem';
+            numberInput.style.width = '100%';
             if (assumption.min !== undefined) numberInput.min = assumption.min;
             if (assumption.max !== undefined) numberInput.max = assumption.max;
             numberInput.placeholder = (assumption.min !== undefined && assumption.max !== undefined) ? `${assumption.min} - ${assumption.max}` : '';
             numberInput.step = (assumption.max !== undefined && assumption.min !== undefined) ? (assumption.max - assumption.min) / 100 : 1;
 
-            // Add event listener for real-time updates
             numberInput.addEventListener('change', (e) => {
                 const newValue = parseFloat(e.target.value);
                 if (!isNaN(newValue) && (assumption.min === undefined || newValue >= assumption.min) && (assumption.max === undefined || newValue <= assumption.max)) {
@@ -86,6 +108,7 @@ export function populateAssumptionsPanel(assumptions) {
             });
 
             controlDiv.appendChild(label);
+            if (sublabel) controlDiv.appendChild(sublabel);
             controlDiv.appendChild(numberInput);
             panel.appendChild(controlDiv);
         });
