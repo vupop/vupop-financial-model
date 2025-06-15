@@ -284,8 +284,9 @@ body {
     background: var(--card-background);
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.08);
-    padding: 1.5rem;
+    padding: 1.1rem;
     margin-bottom: 2rem;
+    font-size: 0.98rem;
 }
 
 .narrative-area h2 {
@@ -297,7 +298,7 @@ body {
 
 #narrative-content {
     color: var(--text-color);
-    font-size: 1rem;
+    font-size: 0.97rem;
     line-height: 1.6;
 }
 

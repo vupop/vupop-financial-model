@@ -61,13 +61,15 @@
                         <canvas id="benchmarkChart"></canvas>
                     </div>
                 </div>
-                <div class="chart-container" id="captable-chart-container" style="max-width: 420px; margin: 1.5rem auto 0 auto;">
-                    <h3 style="color:#FFD700; text-align:center; margin-bottom:0.5rem;">Post-Investment Cap Table</h3>
-                    <canvas id="captableChart"></canvas>
-                </div>
-                <div class="table-area">
-                    <div id="projections-table-container">
-                        <!-- Projections data table will be inserted here -->
+                <div class="cap-table-flex" style="display: flex; gap: 2rem; align-items: flex-start; flex-wrap: wrap;">
+                    <div class="chart-container" id="captable-chart-container" style="max-width: 420px; margin: 0;">
+                        <h3 style="color:#FFD700; text-align:center; margin-bottom:0.5rem;">Post-Investment Cap Table</h3>
+                        <canvas id="captableChart"></canvas>
+                    </div>
+                    <div class="table-area" style="flex:1; min-width:320px;">
+                        <div id="projections-table-container">
+                            <!-- Projections data table will be inserted here -->
+                        </div>
                     </div>
                 </div>
             </main>
