@@ -29,7 +29,7 @@ const KPI_TOOLTIPS = {
 
 export function populateAssumptionsPanel(assumptions) {
     const panel = document.getElementById('assumptions-panel');
-    panel.innerHTML = ''; // Clear existing content
+    panel.innerHTML = '';
 
     for (const key in assumptions) {
         if (Object.hasOwnProperty.call(assumptions, key)) {
@@ -42,8 +42,12 @@ export function populateAssumptionsPanel(assumptions) {
             const label = document.createElement('label');
             label.htmlFor = key;
             label.textContent = labelText;
+
             if (ASSUMPTION_TOOLTIPS[key]) {
-                label.title = ASSUMPTION_TOOLTIPS[key];
+                const tooltip = document.createElement('div');
+                tooltip.className = 'tooltip';
+                tooltip.textContent = ASSUMPTION_TOOLTIPS[key];
+                controlDiv.appendChild(tooltip);
             }
 
             const input = document.createElement('input');
@@ -127,9 +131,10 @@ export function updateKPIs(projections) {
     ];
 
     kpiGrid.innerHTML = kpis.map(kpi => `
-        <div class="kpi-card" title="${KPI_TOOLTIPS[kpi.label] || ''}">
+        <div class="kpi-card">
             <h3>${kpi.label}</h3>
             <p>${kpi.value}</p>
+            ${KPI_TOOLTIPS[kpi.label] ? `<div class="tooltip">${KPI_TOOLTIPS[kpi.label]}</div>` : ''}
         </div>
     `).join('');
 }
