@@ -2,7 +2,7 @@
 
 /* Base styles */
 :root {
-    --primary-color: #FFD700; /* Vupop Yellow */
+    --primary-color: #FFFF00; /* Vupop Yellow */
     --secondary-color: #121212; /* Dark background */
     --accent-color: #e74c3c;
     --text-color: #fff;
@@ -55,8 +55,8 @@ body {
 
 .password-box h2 {
     margin: 0 0 1rem;
-    color: #FFD700;
-    font-size: 2rem;
+    color: #FFFF00;
+    font-size: 1.7rem;
     font-weight: bold;
     letter-spacing: 1px;
 }
@@ -79,12 +79,12 @@ body {
 }
 
 .password-box input:focus {
-    border-color: #FFD700;
+    border-color: #FFFF00;
     outline: none;
 }
 
 .password-box button {
-    background-color: #FFD700;
+    background-color: #FFFF00;
     color: #000;
     border: none;
     padding: 0.75rem 2rem;
@@ -96,7 +96,7 @@ body {
 }
 
 .password-box button:hover {
-    background-color: #ffc700;
+    background-color: #FFFF00;
 }
 
 .error-message {
@@ -227,7 +227,7 @@ body {
     transition: box-shadow 0.18s, border 0.18s;
     position: relative;
     overflow: hidden;
-    font-size: 0.93rem;
+    font-size: 0.82rem;
 }
 
 .kpi-card {
@@ -238,8 +238,8 @@ body {
 
 .kpi-card h3 {
     margin: 0 0 0.35rem 0;
-    font-size: 1.01rem;
-    color: #b0b0b0;
+    font-size: 0.98rem;
+    color: #FFFF00;
     font-weight: 500;
     display: flex;
     align-items: center;
@@ -248,9 +248,9 @@ body {
 
 .kpi-card p {
     margin: 0;
-    font-size: 1.45rem;
+    font-size: 1.05rem;
     font-weight: bold;
-    color: var(--primary-color);
+    color: #FFFF00;
     letter-spacing: -0.5px;
 }
 
@@ -271,7 +271,7 @@ body {
 }
 
 .narrative-area {
-    font-size: 0.89rem;
+    font-size: 0.82rem;
     padding: 0.5rem 0.7rem 0.4rem 0.7rem;
     margin-bottom: 0.7rem;
 }
@@ -282,11 +282,12 @@ body {
 
 .section-header, .narrative-area h2, .projections-table th, .fundraising-metrics-table td:first-child {
     color: #FFFF00 !important;
+    font-size: 1rem;
 }
 
 .narrative-area, #narrative-content, .narrative-area p, .narrative-area ul, .narrative-area li {
     color: #FFFF00 !important;
-    font-size: 0.89rem;
+    font-size: 0.82rem;
 }
 
 .projections-table th, .projections-table td {
@@ -458,15 +459,15 @@ body {
     flex: 1 1 0;
 }
 .numeric-widget .num {
-    font-size: 1.18rem;
+    font-size: 1.05rem;
     font-weight: bold;
-    color: #FFFF00;
-    margin-bottom: 0.15rem;
+    color: #FFFF00 !important;
+    margin-bottom: 0.12rem;
     letter-spacing: 0.5px;
 }
 .numeric-widget .label {
-    font-size: 0.82rem;
-    color: #FFFF00;
+    font-size: 0.75rem;
+    color: #FFFF00 !important;
     opacity: 0.85;
     text-align: center;
     font-weight: 500;
