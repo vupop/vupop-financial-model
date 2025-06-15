@@ -224,13 +224,9 @@ export function parseFinancialData(htmlText) {
             if (mappedKey && cells.length > 3) { 
                 const rawValue = cells[1].textContent.trim();
                 const note = cells[3].textContent.trim();
-                
-                if (rawValue) {
-                    assumptions[mappedKey] = {
-                        ...assumptions[mappedKey],
-                        value: parseValue(rawValue),
-                        note: note || '',
-                    };
+                if (rawValue && assumptions[mappedKey]) {
+                    assumptions[mappedKey].value = parseValue(rawValue);
+                    assumptions[mappedKey].note = note || '';
                 }
             }
         } else if (mode === 'b2b' || mode === 'costs') {
