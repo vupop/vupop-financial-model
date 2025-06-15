@@ -1,6 +1,6 @@
 // Vupop Financial Model Main Script 
 import { assumptions, state, parseFinancialData, fixedInputs } from './state.js';
-import { populateAssumptionsPanel, updateKPIs, updateFinancialChart, updateProjectionsTable, updateNarrativeSection, updateBenchmarkChart } from './ui.js';
+import { populateAssumptionsPanel, updateKPIs, updateFinancialChart, updateProjectionsTable, updateNarrativeSection, updateBenchmarkChart, updateCapTableChart } from './ui.js';
 import { calculateProjections } from './calculations.js';
 import { initAuth } from './auth.js';
 
@@ -70,4 +70,5 @@ function updateDashboard() {
     updateProjectionsTable(state.projections);
     updateNarrativeSection();
     updateBenchmarkChart();
+    updateCapTableChart();
 } 

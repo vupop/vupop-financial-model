@@ -402,4 +402,54 @@ export function updateBenchmarkChart() {
         container.appendChild(contextDiv);
     }
     contextDiv.textContent = "Benchmarking data shows how vupop's projected metrics compare to recent market leaders valuations and MAU at sale. The niche nature of vupops audience and industry will indicate a higher multiple of valuation as seen in the MAU to valuation ratios of Truth Social and Snapchat.";
+}
+
+export function updateCapTableChart() {
+    const ctx = document.getElementById('captableChart').getContext('2d');
+    const data = {
+        labels: [
+            'Founders',
+            'Employee Option Pool',
+            'Investor 1',
+            'Investor 2',
+        ],
+        datasets: [{
+            data: [41.89, 15.0, 0.85, 0.44],
+            backgroundColor: [
+                '#FFD700', // Founders
+                '#03a9f4', // Option Pool
+                '#e67e22', // Investor 1
+                '#8bc34a', // Investor 2
+            ],
+            borderColor: '#222',
+            borderWidth: 2,
+        }]
+    };
+    const options = {
+        responsive: true,
+        plugins: {
+            legend: {
+                position: 'bottom',
+                labels: { color: '#fff', font: { size: 14 } }
+            },
+            tooltip: {
+                callbacks: {
+                    label: function(context) {
+                        return `${context.label}: ${context.parsed} %`;
+                    }
+                }
+            }
+        }
+    };
+    if (window.captableChartInstance) {
+        window.captableChartInstance.data = data;
+        window.captableChartInstance.options = options;
+        window.captableChartInstance.update();
+    } else {
+        window.captableChartInstance = new Chart(ctx, {
+            type: 'pie',
+            data: data,
+            options: options
+        });
+    }
 } 
