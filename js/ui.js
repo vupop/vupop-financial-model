@@ -143,50 +143,61 @@ let financialChart = null;
 
 export function updateFinancialChart(projections) {
     const ctx = document.getElementById('financialChart').getContext('2d');
-    
     if (!projections || !projections.yearly) {
         return;
     }
-
     const labels = projections.yearly.map(p => `Year ${p.year}`);
-    const b2cRevenueData = projections.yearly.map(p => p.revenue.totalB2C);
-    const b2bRevenueData = projections.yearly.map(p => p.revenue.totalB2B);
     const totalRevenueData = projections.yearly.map(p => p.revenue.total);
-    const ebitdaData = projections.yearly.map(p => p.profitability.ebitda);
-
+    const opexData = projections.yearly.map(p => p.costs.totalOpEx);
+    const mauData = projections.yearly.map(p => p.mau);
+    // Exit Valuation: use revenue * multiple (Year 3: 15x, Year 4: 10x, Year 5: 8x, else 0)
+    const exitValuationData = projections.yearly.map((p, i) => {
+        if (i === 2) return p.revenue.total * 15;
+        if (i === 3) return p.revenue.total * 10;
+        if (i === 4) return p.revenue.total * 8;
+        return 0;
+    });
     const data = {
         labels: labels,
-        datasets: [{
-            label: 'Total Revenue (£)',
-            data: totalRevenueData,
-            borderColor: '#FFD700', // Vupop Yellow
-            backgroundColor: 'rgba(255, 215, 0, 0.1)',
-            fill: true,
-            tension: 0.4,
-        }, {
-            label: 'Total B2B Revenue (£)',
-            data: b2bRevenueData,
-            borderColor: '#03a9f4', // Light Blue
-            backgroundColor: 'rgba(3, 169, 244, 0.1)',
-            fill: true,
-            tension: 0.4,
-        }, {
-            label: 'Total B2C Revenue (£)',
-            data: b2cRevenueData,
-            borderColor: '#8bc34a', // Light Green
-            backgroundColor: 'rgba(139, 195, 74, 0.1)',
-            fill: true,
-            tension: 0.4,
-        }, {
-            label: 'EBITDA (£)',
-            data: ebitdaData,
-            borderColor: '#f44336', // Red
-            backgroundColor: 'rgba(244, 67, 54, 0.1)',
-            fill: true,
-            tension: 0.4,
-        }]
+        datasets: [
+            {
+                label: 'Exit Valuation (£)',
+                data: exitValuationData,
+                borderColor: '#FFD700',
+                backgroundColor: 'rgba(255, 215, 0, 0.1)',
+                fill: false,
+                tension: 0.4,
+                yAxisID: 'y',
+            },
+            {
+                label: 'Total Revenue (£)',
+                data: totalRevenueData,
+                borderColor: '#03a9f4',
+                backgroundColor: 'rgba(3, 169, 244, 0.1)',
+                fill: false,
+                tension: 0.4,
+                yAxisID: 'y',
+            },
+            {
+                label: 'Opex (£)',
+                data: opexData,
+                borderColor: '#e67e22',
+                backgroundColor: 'rgba(230, 126, 34, 0.1)',
+                fill: false,
+                tension: 0.4,
+                yAxisID: 'y',
+            },
+            {
+                label: 'MAU',
+                data: mauData,
+                borderColor: '#8bc34a',
+                backgroundColor: 'rgba(139, 195, 74, 0.1)',
+                fill: false,
+                tension: 0.4,
+                yAxisID: 'y1',
+            }
+        ]
     };
-
     const options = {
         responsive: true,
         maintainAspectRatio: false,
@@ -194,50 +205,44 @@ export function updateFinancialChart(projections) {
             y: {
                 beginAtZero: true,
                 ticks: {
-                    color: '#a0a0a0', // Light gray ticks
-                    callback: function(value, index, values) {
-                        return '£' + (value / 1000) + 'k';
-                    }
+                    color: '#a0a0a0',
+                    callback: function(value) { return '£' + (value / 1000) + 'k'; }
                 },
-                grid: {
-                    color: '#333' // Darker grid lines
-                }
+                grid: { color: '#333' },
+                title: { display: true, text: '£ (Valuation, Revenue, Opex)' }
             },
-            x: {
+            y1: {
+                beginAtZero: true,
+                position: 'right',
                 ticks: {
-                    color: '#a0a0a0' // Light gray ticks
+                    color: '#8bc34a',
+                    callback: function(value) { return value >= 1000 ? (value / 1000) + 'k' : value; }
                 },
-                grid: {
-                    color: '#333' // Darker grid lines
-                }
+                grid: { drawOnChartArea: false },
+                title: { display: true, text: 'MAU' }
             }
         },
         plugins: {
             legend: {
                 position: 'top',
-                labels: {
-                    color: '#e0e0e0' // Light gray legend text
-                }
+                labels: { color: '#e0e0e0' }
             },
             tooltip: {
                 callbacks: {
                     label: function(context) {
-                        let label = context.dataset.label || '';
-                        if (label) {
-                            label += ': ';
+                        if (context.dataset.label === 'MAU') {
+                            return context.dataset.label + ': ' + context.parsed.y.toLocaleString('en-GB');
+                        } else {
+                            return context.dataset.label + ': £' + context.parsed.y.toLocaleString('en-GB');
                         }
-                        if (context.parsed.y !== null) {
-                            label += new Intl.NumberFormat('en-GB', { style: 'currency', currency: 'GBP' }).format(context.parsed.y);
-                        }
-                        return label;
                     }
                 }
             }
         }
     };
-
     if (financialChart) {
         financialChart.data = data;
+        financialChart.options = options;
         financialChart.update();
     } else {
         financialChart = new Chart(ctx, {
@@ -383,4 +388,18 @@ export function updateBenchmarkChart() {
             options: options
         });
     }
+
+    // Add context sentence below chart
+    const container = document.getElementById('benchmark-chart-container');
+    let contextDiv = document.getElementById('benchmark-context');
+    if (!contextDiv) {
+        contextDiv = document.createElement('div');
+        contextDiv.id = 'benchmark-context';
+        contextDiv.style.color = '#FFD700';
+        contextDiv.style.fontSize = '1rem';
+        contextDiv.style.marginTop = '10px';
+        contextDiv.style.textAlign = 'center';
+        container.appendChild(contextDiv);
+    }
+    contextDiv.textContent = "Benchmarking data shows how vupop's projected metrics compare to recent market leaders valuations and MAU at sale. The niche nature of vupops audience and industry will indicate a higher multiple of valuation as seen in the MAU to valuation ratios of Truth Social and Snapchat.";
 } 
