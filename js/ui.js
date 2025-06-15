@@ -306,9 +306,8 @@ let benchmarkChart = null;
 
 export function updateBenchmarkChart() {
     const ctx = document.getElementById('benchmarkChart').getContext('2d');
-    // Hardcoded market comps (from markdown and spreadsheet)
+    // Hardcoded market comps (no Vupop)
     const comps = [
-        { name: 'Vupop (Yr 4)', mau: 500000, valuation: 100_000_000 },
         { name: 'Discord (2024)', mau: 200_000_000, valuation: 11_700_000_000 },
         { name: 'Reddit (2024)', mau: 430_000_000, valuation: 5_070_000_000 },
         { name: 'Truth Social (2024)', mau: 5_000_000, valuation: 4_680_000_000 },
@@ -321,7 +320,7 @@ export function updateBenchmarkChart() {
             {
                 label: 'Valuation (£)',
                 data: comps.map(c => c.valuation),
-                backgroundColor: comps.map(c => c.name.includes('Vupop') ? '#FFD700' : '#888'),
+                backgroundColor: '#888',
             },
             {
                 label: 'MAU (millions)',
