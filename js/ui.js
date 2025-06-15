@@ -1,3 +1,5 @@
+import { calculateGrowthRate } from './calculations.js';
+
 // Tooltip text for assumptions
 const ASSUMPTION_TOOLTIPS = {
     startingMAU: 'Monthly Active Users at launch (Month 1)',
