@@ -141,7 +141,7 @@ export function updateKPIs(projections) {
         <div class="kpi-card">
             <h3>${kpi.label}</h3>
             <p>${kpi.value}</p>
-            <div style="font-size:0.95rem;color:#FFD700;margin-top:0.2rem;">${kpi.sub || ''}</div>
+            <div style="font-size:0.95rem;color:#FFFF00;margin-top:0.2rem;">${kpi.sub || ''}</div>
             ${KPI_TOOLTIPS[kpi.label] ? `<div class="tooltip">${KPI_TOOLTIPS[kpi.label]}</div>` : ''}
         </div>
     `).join('');
@@ -268,7 +268,7 @@ export function updateProjectionsTable(projections) {
         return;
     }
     // Add context sentence above the table
-    const contextSentence = `<div style=\"color:#FFD700;font-size:0.97rem;margin-bottom:0.5rem;line-height:1.3;\">5-year projections: Key financial metrics and exit valuation milestones based on current model assumptions. This table shows the growth, profitability, and exit potential at each stage.</div>`;
+    const contextSentence = `<div style=\"color:#FFFF00;font-size:0.97rem;margin-bottom:0.5rem;line-height:1.3;\">5-year projections: Key financial metrics and exit valuation milestones based on current model assumptions. This table shows the growth, profitability, and exit potential at each stage.</div>`;
     const fmtGBP = v => `£${Number(v).toLocaleString('en-GB', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
     const fmtPct = v => `${Number(v).toFixed(1)}%`;
     const rows = projections.yearly.map((year, i) => `
@@ -308,7 +308,7 @@ export function updateProjectionsTable(projections) {
 export function updateNarrativeSection() {
     const narrative = document.getElementById('narrative-content');
     narrative.innerHTML = `
-        <p><span style="color:#FFD700;font-weight:bold;font-size:1.2rem;">Vupop is positioned to achieve a <b>£100 million valuation at 313K MAU</b>, representing exceptional returns for early investors and a compelling exit opportunity.</span></p>
+        <p><span style="color:#FFFF00;font-weight:bold;font-size:1.2rem;">Vupop is positioned to achieve a <b>£100 million valuation at 313K MAU</b>, representing exceptional returns for early investors and a compelling exit opportunity.</span></p>
         <p>The model projects strong revenue growth, high-margin recurring revenue, and a diversified business model. Key metrics such as EBITDA, gross margin, and B2B/B2C revenue mix are benchmarked against leading market comps, supporting the investment thesis and exit strategy.</p>
         <ul>
             <li><b>Exceptional return potential:</b> 22x+ return on current £4.5M valuation</li>
@@ -316,7 +316,7 @@ export function updateNarrativeSection() {
             <li><b>Multiple strategic acquirers:</b> Media conglomerates and tech giants with clear rationale for premium offers</li>
             <li><b>High recurring revenue and margins:</b> 60%+ gross margin, recurring B2B/B2C revenue, and robust IP/licensing model</li>
         </ul>
-        <p style="color:#FFD700;"><b>Bottom line:</b> Vupop's differentiated positioning in sports media, scalable technology, and proven exit comparables make it a compelling opportunity for investors seeking outsized returns on a realistic user growth target.</p>
+        <p style="color:#FFFF00;"><b>Bottom line:</b> Vupop's differentiated positioning in sports media, scalable technology, and proven exit comparables make it a compelling opportunity for investors seeking outsized returns on a realistic user growth target.</p>
     `;
 }
 
@@ -408,7 +408,7 @@ export function updateBenchmarkChart() {
     if (!contextDiv) {
         contextDiv = document.createElement('div');
         contextDiv.id = 'benchmark-context';
-        contextDiv.style.color = '#FFD700';
+        contextDiv.style.color = '#FFFF00';
         contextDiv.style.fontSize = '0.97rem';
         contextDiv.style.lineHeight = '1.3';
         contextDiv.style.marginTop = '10px';
@@ -429,7 +429,7 @@ export function updateCapTableChart() {
         datasets: [{
             data: [41.89, 15.0, 0.85, 0.44],
             backgroundColor: [
-                '#FFD700', // Founders
+                '#FFFF00', // Founders
                 '#03a9f4', // Option Pool
                 '#e67e22', // Investor 1
                 '#8bc34a', // Investor 2

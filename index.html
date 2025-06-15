@@ -79,11 +79,11 @@
                             <h3 style="color:#FFFF00; text-align:center; margin-bottom:0.5rem;">Post-Investment Cap Table</h3>
                             <canvas id="captableChart"></canvas>
                         </div>
-                        <div style="display:flex;flex-direction:column;gap:1.1rem;flex:1;min-width:220px;">
-                            <div class="gauge-widget" style="background:#181818;padding:0.7rem 0.5rem 0.2rem 0.5rem;border-radius:12px;box-shadow:0 2px 12px #0006;max-width:260px;margin:0 auto 0.2rem auto;">
+                        <div id="fundraising-metrics-card" style="background:#181818;border-radius:12px;box-shadow:0 2px 12px #0006;padding:1.1rem 1.2rem;max-width:320px;margin:0 auto;display:flex;flex-direction:column;align-items:center;">
+                            <div class="gauge-widget" style="background:none;box-shadow:none;padding:0;margin-bottom:0.7rem;">
                                 <canvas id="seisGauge" width="200" height="120"></canvas>
                             </div>
-                            <div class="numeric-widgets-row" style="display:flex;gap:0.7rem;justify-content:space-between;">
+                            <div class="numeric-widgets-col" style="display:flex;flex-direction:column;gap:0.5rem;width:100%;align-items:center;">
                                 <div id="current-valuation"></div>
                                 <div id="next-round-raise"></div>
                                 <div id="target-next-valuation"></div>
