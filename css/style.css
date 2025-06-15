@@ -227,11 +227,11 @@ body {
     transition: box-shadow 0.18s, border 0.18s;
     position: relative;
     overflow: hidden;
+    font-size: 0.93rem;
 }
 
 .kpi-card {
     min-height: 90px;
-    font-size: 0.97rem;
     margin-bottom: 0.7rem;
     padding: 0.8rem 1rem 0.7rem 1rem;
 }
@@ -263,32 +263,33 @@ body {
     min-width: 320px;
     min-height: 260px;
     height: 320px;
-    font-size: 0.97rem;
     padding: 0.8rem 1rem 0.7rem 1rem;
 }
 
 .table-area {
-    font-size: 0.96rem;
     padding: 0.7rem 0.7rem 0.5rem 0.7rem;
 }
 
 .narrative-area {
-    font-size: 0.97rem;
     padding: 0.9rem 1.1rem 0.8rem 1.1rem;
     margin-bottom: 1.1rem;
 }
 
 #narrative-content {
-    font-size: 0.96rem;
+    font-size: 0.93rem;
+}
+
+.section-header, .narrative-area h2, .projections-table th, .fundraising-metrics-table td:first-child {
+    color: #FFD700 !important;
+}
+
+.narrative-area, #narrative-content, .narrative-area p, .narrative-area ul, .narrative-area li {
+    color: #FFD700 !important;
+    font-size: 0.93rem;
 }
 
 .projections-table th, .projections-table td {
-    padding: 0.45em 0.7em;
-    font-size: 0.96rem;
-}
-
-.projections-table th {
-    font-size: 1.01rem;
+    font-size: 0.93rem;
 }
 
 .cap-table-flex {

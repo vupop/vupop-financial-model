@@ -44,28 +44,47 @@
                 </div>
             </div>
             <main class="main-area">
-                <div class="narrative-area">
-                    <h2>Key Insights</h2>
-                    <div id="narrative-content">
-                        <!-- Narrative/insight text will be inserted here -->
+                <!-- Fundraising Metrics Section -->
+                <div class="dashboard-section" id="fundraising-metrics">
+                    <h2 class="section-header" style="color:#FFD700;font-size:1.13rem;margin-bottom:0.7rem;">Fundraising Metrics</h2>
+                    <div class="fundraising-metrics-flex" style="display:flex;gap:1.1rem;align-items:flex-start;flex-wrap:wrap;">
+                        <div class="chart-container" id="captable-chart-container" style="max-width: 420px; margin: 0;">
+                            <h3 style="color:#FFD700; text-align:center; margin-bottom:0.5rem;">Post-Investment Cap Table</h3>
+                            <canvas id="captableChart"></canvas>
+                        </div>
+                        <div class="fundraising-metrics-table" style="flex:1;min-width:220px;">
+                            <table class="projections-table compact-table">
+                                <tbody>
+                                    <tr><td style="color:#FFD700;">Current Valuation</td><td id="current-valuation">£4,500,000</td></tr>
+                                    <tr><td style="color:#FFD700;">SEIS Amount Remaining</td><td id="seis-remaining">£XX,XXX</td></tr>
+                                    <tr><td style="color:#FFD700;">Next Round Target Raise</td><td id="next-round-raise">£3,500,000</td></tr>
+                                    <tr><td style="color:#FFD700;">Target Valuation (Next Round)</td><td id="target-next-valuation">£15,000,000</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
-                <div class="kpi-grid">
-                    <!-- KPI cards will be dynamically inserted here -->
-                </div>
-                <div class="charts-area">
-                    <div class="chart-container" id="financial-chart-container">
-                        <canvas id="financialChart"></canvas>
+                <!-- Business Model Forecasting Section -->
+                <div class="dashboard-section" id="business-model-forecasting">
+                    <h2 class="section-header" style="color:#FFD700;font-size:1.13rem;margin-bottom:0.7rem;">Business Model Forecasting</h2>
+                    <div class="narrative-area">
+                        <h2>Key Insights</h2>
+                        <div id="narrative-content">
+                            <!-- Narrative/insight text will be inserted here -->
+                        </div>
                     </div>
-                    <div class="chart-container" id="benchmark-chart-container">
-                        <canvas id="benchmarkChart"></canvas>
+                    <div class="kpi-grid">
+                        <!-- KPI cards will be dynamically inserted here -->
                     </div>
-                </div>
-                <div class="cap-table-flex" style="display: flex; gap: 2rem; align-items: flex-start; flex-wrap: wrap;">
-                    <div class="chart-container" id="captable-chart-container" style="max-width: 420px; margin: 0;">
-                        <h3 style="color:#FFD700; text-align:center; margin-bottom:0.5rem;">Post-Investment Cap Table</h3>
-                        <canvas id="captableChart"></canvas>
+                    <div class="charts-area">
+                        <div class="chart-container" id="financial-chart-container">
+                            <canvas id="financialChart"></canvas>
+                        </div>
+                        <div class="chart-container" id="benchmark-chart-container">
+                            <canvas id="benchmarkChart"></canvas>
+                        </div>
                     </div>
+                    <div class="cap-table-flex" style="display:none;"></div>
                     <div class="table-area" style="flex:1; min-width:320px;">
                         <div id="projections-table-container">
                             <!-- Projections data table will be inserted here -->
